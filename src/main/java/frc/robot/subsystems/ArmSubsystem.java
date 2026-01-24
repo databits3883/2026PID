@@ -14,8 +14,8 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
+//import edu.wpi.first.math.MathUtil;
+//import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -33,8 +33,8 @@ public class ArmSubsystem extends SubsystemBase {
     private static double kI = 0.0001; // Integral gain
     private static double kD = 0.0; // Derivative gain
     private static double maxOutput = 0.3;
-    private static final double kMaxVelocity = 1.0; // Max velocity in units/sec
-    private static final double kMaxAcceleration = 0.5; // Max acceleration in units/sec^2
+    //private static final double kMaxVelocity = 1.0; // Max velocity in units/sec
+    //private static final double kMaxAcceleration = 0.5; // Max acceleration in units/sec^2
 
     private SparkMax m_motor = new SparkMax(Constants.ArmConstants.ARM_MOTOR_ID, MotorType.kBrushless);
     public SparkAbsoluteEncoder absAngleEncoder = m_motor.getAbsoluteEncoder();

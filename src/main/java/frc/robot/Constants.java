@@ -53,4 +53,15 @@ public final class Constants {
   
 
   }
+
+  public static class LaunchConstants {
+    public static final int LAUNCH_MOTOR_ID_A = 12;
+    public static final int LAUNCH_MOTOR_ID_B = 11;
+    public static double KP;
+    public static double KI;
+    public static double KD;
+    public static double MAX_OUTPUT;
+    public static final double MAX_VELOCITY = 1.0;
+    public static final double MAX_ACCELERATION = 0.5 ;
+  }
 }

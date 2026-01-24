@@ -27,8 +27,8 @@ public class TurretSubsystem extends SubsystemBase {
     private static double kI = Constants.TurretConstants.KI;
     private static double kD = Constants.TurretConstants.KD;
     private static double maxOutput = Constants.TurretConstants.MAX_OUTPUT;
-    private static final double kMaxVelocity = Constants.TurretConstants.MAX_VELOCITY;
-    private static final double kMaxAcceleration = Constants.TurretConstants.MAX_ACCELERATION;
+    //private static final double kMaxVelocity = Constants.TurretConstants.MAX_VELOCITY;
+    //private static final double kMaxAcceleration = Constants.TurretConstants.MAX_ACCELERATION;
     private static final double kTurretGearRatio = Constants.TurretConstants.TURRET_GEAR_RATIO;
     
     private SparkMax m_motor = new SparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);

@@ -20,30 +20,31 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class StageSubsystem extends SubsystemBase {
+public class LaunchSubsystem extends SubsystemBase {
    // PID Gains and Motion Profile Constraints
-    private static double kP = Constants.StageConstants.KP;
-    private static double kI = Constants.StageConstants.KI;
-    private static double kD = Constants.StageConstants.KD;
-    private static double maxOutput = Constants.StageConstants.MAX_OUTPUT;
-    //private static final double kMaxVelocity = Constants.StageConstants.MAX_VELOCITY;
-    //private static final double kMaxAcceleration = Constants.StageConstants.MAX_ACCELERATION;
+    private static double kP = Constants.LaunchConstants.KP;
+    private static double kI = Constants.LaunchConstants.KI;
+    private static double kD = Constants.LaunchConstants.KD;
+    private static double maxOutput = Constants.LaunchConstants.MAX_OUTPUT;
+    //private static final double kMaxVelocity = Constants.LaunchConstants.MAX_VELOCITY;
+    //private static final double kMaxAcceleration = Constants.LaunchConstants.MAX_ACCELERATION;
     
-    private SparkMax m_motor = new SparkMax(Constants.StageConstants.STAGE_MOTOR_ID, MotorType.kBrushless);
-    
+    private SparkMax m_motor_a = new SparkMax(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A, MotorType.kBrushless);
+    private SparkMax m_motor_b = new SparkMax(Constants.LaunchConstants.LAUNCH_MOTOR_ID_B, MotorType.kBrushless);
        
     //private SparkMaxConfig m_config = new SparkMaxConfig();
     private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
-    private SparkClosedLoopController closedLoopController = m_motor.getClosedLoopController();
-    private RelativeEncoder stageEncoder=null;
+    private SparkClosedLoopController closedLoopController_a = m_motor_a.getClosedLoopController();
+    private SparkClosedLoopController closedLoopController_b = m_motor_b.getClosedLoopController();
+    private RelativeEncoder launchEncoder_a=null;
+    private RelativeEncoder launchEncoder_b=null;
 
 
-  public StageSubsystem() {
+  public LaunchSubsystem() {
    
-      stageEncoder = m_motor.getEncoder();
-      
+      launchEncoder_a = m_motor_a.getEncoder();      
         
-        m_baseConfig.closedLoop
+      m_baseConfig.closedLoop
                         .p(kP)
                         .i(kI)
                         .d(kD)
@@ -55,15 +56,20 @@ public class StageSubsystem extends SubsystemBase {
         //m_baseConfig.encoder.velocityConversionFactor(0.5);
 
         //Update the motoro config to use PID
-        m_motor.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        SmartDashboard.setDefaultNumber("Stage Target Velocity", 0);
-        SmartDashboard.setDefaultBoolean("Stage Run Motor", false);
-        SmartDashboard.setDefaultBoolean("Stage Update PID", false);
-                SmartDashboard.putNumber("Stage P Gain", kP);
-        SmartDashboard.putNumber("Stage I Gain", kI);
-        SmartDashboard.putNumber("Stage D Gain", kD);
-        SmartDashboard.putNumber("Stage IAccum", 0);
-        SmartDashboard.putNumber("Stage Current Velocity", 0);
+        m_motor_a.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        //update config for follower
+        m_baseConfig.follow(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A,true);
+        m_motor_b.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+  
+
+        SmartDashboard.setDefaultNumber("Launch Target Velocity", 0);
+        SmartDashboard.setDefaultBoolean("Launch Run Motor", false);
+        SmartDashboard.setDefaultBoolean("Launch Update PID", false);
+                SmartDashboard.putNumber("Launch P Gain", kP);
+        SmartDashboard.putNumber("Launch I Gain", kI);
+        SmartDashboard.putNumber("Launch D Gain", kD);
+        SmartDashboard.putNumber("Launch IAccum", 0);
+        SmartDashboard.putNumber("Launch Current Velocity", 0);
 
 
   }
@@ -95,32 +101,31 @@ public class StageSubsystem extends SubsystemBase {
  public void stop()
     {
         //set the current
-        closedLoopController.setSetpoint(0, ControlType.kVelocity);
-        closedLoopController.setIAccum(0);
+        closedLoopController_a.setSetpoint(0, ControlType.kVelocity);
         //turn off motor
-        m_motor.setVoltage(0);
+        m_motor_a.setVoltage(0);
         //turn off the control mode
     }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if(SmartDashboard.getBoolean("Stage Run Motor", false)) {
-      double targetVelocity = SmartDashboard.getNumber("Stage Target Velocity", 0);
-      closedLoopController.setSetpoint(targetVelocity, ControlType.kVelocity);
+    if(SmartDashboard.getBoolean("Launch Run Motor", false)) {
+      double targetVelocity = SmartDashboard.getNumber("Launch Target Velocity", 0);
+      closedLoopController_a.setSetpoint(targetVelocity, ControlType.kVelocity);
     } else {
       stop();
     }
 
 
-    if(SmartDashboard.getBoolean("Stage Update PID", false)){
-      SmartDashboard.putBoolean("Stage Update PID", false);
+    if(SmartDashboard.getBoolean("Launch Update PID", false)){
+      SmartDashboard.putBoolean("Launch Update PID", false);
         
         
             //Read PID values
             // read PID coefficients from SmartDashboard
-            double p = SmartDashboard.getNumber("Stage P Gain", 0);
-            double i = SmartDashboard.getNumber("Stage I Gain", 0);
-            double d = SmartDashboard.getNumber("Stage D Gain", 0);
+            double p = SmartDashboard.getNumber("Launch P Gain", 0);
+            double i = SmartDashboard.getNumber("Launch I Gain", 0);
+            double d = SmartDashboard.getNumber("Launch D Gain", 0);
             
             // if PID coefficients on SmartDashboard have changed, write new values to controller
             boolean updatePID = false;
@@ -138,12 +143,12 @@ public class StageSubsystem extends SubsystemBase {
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                         .outputRange((-1 * maxOutput),maxOutput); // set PID and 1/3 max speeds
                 //Update the motoro config to use PID
-                m_motor.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+                m_motor_a.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
             } //end if updatePID
     } 
     
-        SmartDashboard.putNumber("Stage Current Velocity", stageEncoder.getVelocity());
-        SmartDashboard.putNumber("Stage IAccum", closedLoopController.getIAccum());
+        SmartDashboard.putNumber("Launch Current Velocity", launchEncoder_a.getVelocity());
+        SmartDashboard.putNumber("Launch IAccum", closedLoopController_a.getIAccum());
   }
 
   @Override
