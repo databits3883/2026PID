@@ -22,10 +22,10 @@ public final class Constants {
 
     //Gains for the Arm angle controllers, both FF and PID
     public static final double ARM_KS_ANGLE = 0;
-    public static final double ARM_KG_ANGLE = 0.35;//0.085 gains for no coral and set()  // 0.35
+    public static final double ARM_KG_ANGLE = 0.35;
     public static final double ARM_KV_ANGLE = 0;
-    public static final double ARM_KP_ANGLE = 0.09;//0.0025 gains for no coral and set() //0.04 //0.09
-    public static final double ARM_KI_ANGLE = 0;//0.001 gains for no coral and set()
+    public static final double ARM_KP_ANGLE = 0.09;
+    public static final double ARM_KI_ANGLE = 0;
     public static final double ARM_KD_ANGLE = 0;    
   }
 
