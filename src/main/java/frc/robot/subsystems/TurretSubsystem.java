@@ -1,5 +1,11 @@
 package frc.robot.subsystems;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -7,16 +13,16 @@ import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -235,6 +241,37 @@ public class TurretSubsystem extends SubsystemBase {
             closedLoopController.setSetpoint(targetPositionRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
         }
     }
+    public void setTurretSetPoint(double setPointAngle){
+
+        SmartDashboard.putNumber("Turret Target Position",setPointAngle);
+        SmartDashboard.putBoolean("Turret GO", true);
+    }
+
+  /**
+   * Aim the robot at the target returned by PhotonVision.
+   *
+   * @return A {@link Command} which will run the alignment.
+   */
+  public Command aimAtTarget(PhotonCamera camera)
+  {
+    //camera.getAllUnreadResults()
+
+    return run(() -> {
+      PhotonPipelineResult result = null;
+      List<PhotonPipelineResult>  allresults = camera.getAllUnreadResults();
+      if ((allresults!= null) && (allresults.size() > 0)) result = allresults.get(0);
+      if (result != null)
+      {
+
+            double getYawOfTarget = result.getBestTarget().getYaw();
+            //assume this is in degrees
+            //set as new target
+            setTurretSetPoint(getYawOfTarget);
+          
+        
+      }
+    });
+  }
 
  
 }
