@@ -23,10 +23,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.RunArm;
+//import frc.robot.commands.RunArm;
 import frc.robot.subsystems.StageSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
+import frc.robot.subsystems.LaunchSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+
 import java.io.File;
 import swervelib.SwerveInputStream;
 
@@ -43,9 +45,10 @@ public class RobotContainer
   final         CommandJoystick driverJoystick = new CommandJoystick(0);
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/platform"));
+  private final SwerveSubsystem drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/platform"));
   public static TurretSubsystem turretSubsystem  = new TurretSubsystem();
   public static StageSubsystem stageSubsystem  = new StageSubsystem();
+  public static LaunchSubsystem launchSubsystem  = new LaunchSubsystem();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;

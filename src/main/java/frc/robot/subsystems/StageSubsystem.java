@@ -59,7 +59,7 @@ public class StageSubsystem extends SubsystemBase {
         SmartDashboard.setDefaultNumber("Stage Target Velocity", 0);
         SmartDashboard.setDefaultBoolean("Stage Run Motor", false);
         SmartDashboard.setDefaultBoolean("Stage Update PID", false);
-                SmartDashboard.putNumber("Stage P Gain", kP);
+        SmartDashboard.putNumber("Stage P Gain", kP);
         SmartDashboard.putNumber("Stage I Gain", kI);
         SmartDashboard.putNumber("Stage D Gain", kD);
         SmartDashboard.putNumber("Stage IAccum", 0);

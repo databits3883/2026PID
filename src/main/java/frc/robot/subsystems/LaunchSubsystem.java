@@ -15,6 +15,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,10 +36,20 @@ public class LaunchSubsystem extends SubsystemBase {
     //private SparkMaxConfig m_config = new SparkMaxConfig();
     private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
     private SparkClosedLoopController closedLoopController_a = m_motor_a.getClosedLoopController();
-    private SparkClosedLoopController closedLoopController_b = m_motor_b.getClosedLoopController();
+    //private SparkClosedLoopController closedLoopController_b = m_motor_b.getClosedLoopController();
     private RelativeEncoder launchEncoder_a=null;
-    private RelativeEncoder launchEncoder_b=null;
-
+    //private RelativeEncoder launchEncoder_b=null;
+    
+    //Initializers for Shuffleboard objects
+    private Double targetVelocity = Double.valueOf(0);
+    private Boolean runMotor = Boolean.valueOf(false);
+    private Boolean updatePID = Boolean.valueOf(false);
+    private Double pGain = Double.valueOf(kP);
+    private Double iGain = Double.valueOf(kI);
+    private Double dGain = Double.valueOf(kD);
+    private Double iAccum = Double.valueOf(0);
+    private Double currentVelocity = Double.valueOf(0);
+    
 
   public LaunchSubsystem() {
    
@@ -65,15 +76,82 @@ public class LaunchSubsystem extends SubsystemBase {
         SmartDashboard.setDefaultNumber("Launch Target Velocity", 0);
         SmartDashboard.setDefaultBoolean("Launch Run Motor", false);
         SmartDashboard.setDefaultBoolean("Launch Update PID", false);
-                SmartDashboard.putNumber("Launch P Gain", kP);
+        SmartDashboard.putNumber("Launch P Gain", kP);
         SmartDashboard.putNumber("Launch I Gain", kI);
         SmartDashboard.putNumber("Launch D Gain", kD);
         SmartDashboard.putNumber("Launch IAccum", 0);
         SmartDashboard.putNumber("Launch Current Velocity", 0);
 
+        
+
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch Target Velocity", ()->getTargetVelocity());
+        Shuffleboard.getTab("Launch Testing").addBoolean("Launch Run Motor", ()->getRunMotor());
+        Shuffleboard.getTab("Launch Testing").addBoolean("Launch Update PID", ()->getUpdatePID());
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch P Gain", ()->getPGain());
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch I Gain", ()->getIGain());
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch D Gain", ()->getDGain());
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch IAccum", ()->getIAccum());
+        Shuffleboard.getTab("Launch Testing").addNumber("Launch Current Velocity", ()->getCurrentVelocity());
 
   }
 
+  //Getters and Setters for Shuffleboard objects
+  private void setTargetVelocity(Double targetSpeed){
+    targetVelocity = targetSpeed;
+  }
+  private Double getTargetVelocity(){
+    return targetVelocity;
+  }
+
+  private void setRunMotor(Boolean runningMotor){
+    runMotor = runningMotor;
+  }
+  private Boolean getRunMotor(){
+    return runMotor;
+  }
+
+  private void setUpdatePID(Boolean isUpdatePID){
+    updatePID = isUpdatePID;
+  }
+  private Boolean getUpdatePID(){
+    return updatePID;
+  }
+  
+  private void setPGain(Double pSet){
+    pGain = pSet;
+  }
+  private Double getPGain(){
+    return pGain;
+  }
+
+  private void setIGain(Double iSet){
+    iGain = iSet;
+  }
+  private Double getIGain(){
+    return iGain;
+  }
+
+  private void setDGain(Double dSet){
+    dGain = dSet;
+  }
+  private Double getDGain(){
+    return dGain;
+  }
+
+  private void setIAccum(Double IA){
+    iAccum = IA;
+  }
+  private Double getIAccum(){
+    return iAccum;
+  }
+
+  private void setCurrentVelocity(Double currentSpeed){
+    currentVelocity = currentSpeed;
+  }
+  private Double getCurrentVelocity(){
+    return currentVelocity;
+  }
+  
 
   /**
    * Example command factory method.
