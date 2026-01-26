@@ -57,6 +57,9 @@ public class TurretAim  extends Command {
               System.out.println("TurretAim:const:getYawOfTarget="+getYawOfTarget);
               //set as new target
               target = getYawOfTarget;
+              //The 0 of turrent is pointing to the right, camera is in front
+              //Add 270 to the target
+              target += 270;
             }
         }
       }
@@ -81,7 +84,7 @@ public class TurretAim  extends Command {
       //We do not need to do anything special if this gets interrupted early
     }
     System.out.println("TurretAim:end:about to stop motor");
-    //RobotContainer.armSubsystem.stop();
+    RobotContainer.turretSubsystem.stop();
   }
   
   // Returns true when the command should end.
