@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -240,6 +241,7 @@ public class Vision
     Optional<Pose3d> tag = fieldLayout.getTagPose(id);
     return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d())).orElse(-1.0);
   }
+
 
   /**
    * Get tracked target from a camera of AprilTagID
@@ -560,6 +562,29 @@ public class Vision
       }
       estimatedRobotPose = visionEst;
     }
+
+  public double getYawOfClosestTarget(Pose3d currentPose, double currentTargetAngle)
+  {
+    double targetAngle = currentTargetAngle;
+    Optional<PhotonPipelineResult> pipelineResult = getLatestResult();
+    if (pipelineResult.isPresent())
+    {
+      PhotonTrackedTarget bestPhotonTarget = pipelineResult.get().getBestTarget();
+        Transform3d bestTarget = bestPhotonTarget.getBestCameraToTarget();
+        Translation2d translation2d = bestTarget.getTranslation().toTranslation2d();
+        Rotation2d rotation2d = new Rotation2d(bestTarget.getRotation().getZ());
+        Pose2d targetPose = new Pose2d(translation2d, rotation2d);
+        Rotation2d targetYaw = PhotonUtils.getYawToPose(currentPose.toPose2d(), targetPose);
+        
+        //Might not neexd to do this
+        targetYaw=targetYaw.minus(currentPose.toPose2d().getRotation()); 
+        
+        targetAngle= Units.rotationsToDegrees(targetYaw.getRotations());
+    }
+    return targetAngle;
+  }
+
+
 
     /**
      * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based

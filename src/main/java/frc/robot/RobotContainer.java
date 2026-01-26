@@ -24,10 +24,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.RunArm;
+import frc.robot.commands.TurretAim;
 import frc.robot.subsystems.StageSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
+
+import org.photonvision.PhotonCamera;
+
 import swervelib.SwerveInputStream;
 
 /**
@@ -49,6 +53,8 @@ public class RobotContainer
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
+
+  private PhotonCamera camera = new PhotonCamera("CameraB");
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -128,6 +134,9 @@ public class RobotContainer
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
+
+    //drivebase.cam
+
   }
 
   /**
@@ -192,6 +201,8 @@ public class RobotContainer
       driverJoystick.button(14).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverJoystick.button(15).onTrue(Commands.none());
       
+      driverJoystick.button(1).onTrue(new TurretAim(camera));
+
       /* Disable actuator
       driverJoystick.povUp().whileTrue(new RunActuator(Constants.ACTUATOR_MOTOR_UP));
       driverJoystick.povDown().whileTrue(new RunActuator(Constants.ACTUATOR_MOTOR_DOWN));
