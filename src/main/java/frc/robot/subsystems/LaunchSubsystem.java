@@ -72,7 +72,7 @@ public class LaunchSubsystem extends SubsystemBase {
         m_baseConfig.follow(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A,true);
         m_motor_b.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   
-
+      /** Zeke commented this out
         SmartDashboard.setDefaultNumber("Launch Target Velocity", 0);
         SmartDashboard.setDefaultBoolean("Launch Run Motor", false);
         SmartDashboard.setDefaultBoolean("Launch Update PID", false);
@@ -81,7 +81,7 @@ public class LaunchSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Launch D Gain", kD);
         SmartDashboard.putNumber("Launch IAccum", 0);
         SmartDashboard.putNumber("Launch Current Velocity", 0);
-
+      */
         
 
         Shuffleboard.getTab("Launch Testing").addNumber("Launch Target Velocity", ()->getTargetVelocity());
