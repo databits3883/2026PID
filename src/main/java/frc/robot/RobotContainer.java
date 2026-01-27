@@ -28,7 +28,6 @@ import frc.robot.subsystems.StageSubsystem;
 import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.LaunchSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-//Nicko is smelly
 import java.io.File;
 import swervelib.SwerveInputStream;
 
