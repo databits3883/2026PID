@@ -59,6 +59,7 @@ public class LaunchSubsystem extends SubsystemBase
                   ;
 
       //Update the motoro config to use PID
+      //TODO: invert primary motor
       m_motor_a.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       //update config for follower
       m_baseConfig.follow(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A,true);
