@@ -7,7 +7,7 @@ import frc.robot.subsystems.StageSubsystem;
 public class Shoot extends Command {
     private final LaunchSubsystem launcher;
     private final StageSubsystem stager;
-    private double startTime = 0;
+    private long startTime = 0;
     //private final BeamBreak beamBreak;
 
     public Shoot(LaunchSubsystem launchSubsystem, StageSubsystem stageSubsystem /* BeamBreak beamBreak*/) 
@@ -43,7 +43,7 @@ public class Shoot extends Command {
 
     @Override
     public boolean isFinished() {
-        double delta = System.currentTimeMillis() - startTime;
+        long delta = System.currentTimeMillis() - startTime;
         //return beamBreak.get() == false;
 
         //Run for 7 seconds

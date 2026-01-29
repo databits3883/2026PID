@@ -10,13 +10,12 @@ import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -29,12 +28,13 @@ public class LaunchSubsystem extends SubsystemBase
   private static double maxOutput = Constants.LaunchConstants.MAX_OUTPUT;
   private double targetVelocity = Constants.LaunchConstants.TARGET_VELOCITY_RPS;
   private boolean isRunning = false;
+  private long startTime = 0;
   
-  private SparkMax m_motor_a = new SparkMax(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A, MotorType.kBrushless);
-  private SparkMax m_motor_b = new SparkMax(Constants.LaunchConstants.LAUNCH_MOTOR_ID_B, MotorType.kBrushless);
+  private SparkFlex m_motor_a = new SparkFlex(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A, MotorType.kBrushless);
+  private SparkFlex m_motor_b = new SparkFlex(Constants.LaunchConstants.LAUNCH_MOTOR_ID_B, MotorType.kBrushless);
       
   //private SparkMaxConfig m_config = new SparkMaxConfig();
-  private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
+  private SparkFlexConfig m_baseConfig = new SparkFlexConfig();
   private SparkClosedLoopController closedLoopController_a = m_motor_a.getClosedLoopController();
   //private SparkClosedLoopController closedLoopController_b = m_motor_b.getClosedLoopController();
   private RelativeEncoder launchEncoder_a=null;
@@ -92,6 +92,12 @@ public class LaunchSubsystem extends SubsystemBase
    */
   public void runLauncher(double targetVelocityRPS)
   {
+    if (!isRunning)
+    {
+      isRunning = true;
+      startTime = System.currentTimeMillis();
+      SmartDashboard.putBoolean("Launch Run Motor", true);
+    }
     closedLoopController_a.setSetpoint(targetVelocityRPS, ControlType.kVelocity);
   }
    
@@ -100,11 +106,6 @@ public class LaunchSubsystem extends SubsystemBase
    */
   public void runLauncher() 
   {
-    if (!isRunning)
-    {
-      isRunning = true;
-      SmartDashboard.putBoolean("Stage Run Motor", true);
-    }
     runLauncher(targetVelocity);
   }
 
@@ -137,9 +138,13 @@ public class LaunchSubsystem extends SubsystemBase
       targetVelocity = targetVelocityDB;
       runLauncher(targetVelocity);
     } 
-    else if (!isRunning)
+    else if (isRunning)    
     {
-      stop();
+      long delta = System.currentTimeMillis() - startTime;
+      if ((delta > 500) && !SmartDashboard.getBoolean("Launch Run Motor", false))
+      {
+        stop();
+      }
     }
 
     if(SmartDashboard.getBoolean("Launch Update PID", false))

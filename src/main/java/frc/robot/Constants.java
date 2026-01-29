@@ -74,7 +74,7 @@ public final class Constants {
     public static final double MAX_ACCELERATION = 0.5; // Max acceleration in units/sec^2
     public static final int MAX_CURRENT = 40; //amps
     public static final double MAX_VOLTAGE = 12; //volts
-    public static final double TARGET_VELOCITY_RPS = 3000; 
+    public static final double TARGET_VELOCITY_RPS = 7000; 
     public static final double TOLERANCE = 100; //rps
   }
 
@@ -89,7 +89,7 @@ public final class Constants {
     public static final double MAX_ACCELERATION = 0.5 ;
     public static final int MAX_CURRENT = 40; //amps
     public static final double MAX_VOLTAGE = 12; //volts
-    public static final double TARGET_VELOCITY_RPS = 7000; 
+    public static final double TARGET_VELOCITY_RPS = 2000; 
     public static final double TOLERANCE = 100; //rps
   }
 }

@@ -35,6 +35,7 @@ public class StageSubsystem extends SubsystemBase
   private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
   private SparkClosedLoopController closedLoopController = m_motor.getClosedLoopController();
   private RelativeEncoder stageEncoder=null;
+  private long startTime = 0;
 
 
   public StageSubsystem() 
@@ -93,8 +94,9 @@ public class StageSubsystem extends SubsystemBase
   {
     if (!isRunning)
     {
+      startTime = System.currentTimeMillis();
       isRunning = true;
-      SmartDashboard.putBoolean("Stage Run Motor", true);
+      SmartDashboard.putBoolean("Stage Run Motor", isRunning);
     }
     closedLoopController.setSetpoint(targetVelocityRPS, ControlType.kVelocity);
   }
@@ -128,9 +130,14 @@ public class StageSubsystem extends SubsystemBase
       targetVelocity = targetVelocityDB;
       runStage();
     } 
-    else if (isRunning)
+    else if (isRunning) 
     {
-      stop();
+      //make sure we wait at least 1/2 second
+      long delta = System.currentTimeMillis()-startTime;
+      if ((delta > 500) && !SmartDashboard.getBoolean("Stage Run Motor", false))
+      {
+        stop();
+      }
     }
 
     if(SmartDashboard.getBoolean("Stage Update PID", false))
