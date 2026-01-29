@@ -54,8 +54,8 @@ public class LaunchSubsystem extends SubsystemBase
                 //.feedForward.kV(12.0/917) // set PID 
                 ;                        
       m_baseConfig.idleMode(IdleMode.kCoast)
-                  .smartCurrentLimit(Constants.LaunchConstants.MAX_CURRENT)
-                  .voltageCompensation(Constants.LaunchConstants.MAX_VOLTAGE)
+                  //.smartCurrentLimit(Constants.LaunchConstants.MAX_CURRENT)
+                  //.voltageCompensation(Constants.LaunchConstants.MAX_VOLTAGE)
                   ;
 
       //Update the motoro config to use PID
@@ -77,7 +77,7 @@ public class LaunchSubsystem extends SubsystemBase
  public void stop()
   {
     isRunning = false;
-    SmartDashboard.putBoolean("Stage Run Motor", false);
+    SmartDashboard.putBoolean("Launch Run Motor", false);
 
     //set the current
     closedLoopController_a.setSetpoint(0, ControlType.kVelocity);
@@ -171,10 +171,12 @@ public class LaunchSubsystem extends SubsystemBase
                     .i(kI)
                     .d(kD)
                     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                    .outputRange((-1 * maxOutput),maxOutput); // set PID and 1/3 max speeds
+                    .outputRange((-1 * maxOutput),maxOutput); // set PID 
 
         //Update the motoro config to use PID
         m_motor_a.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        m_baseConfig.follow(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A,true);
+        m_motor_b.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
       } //end if updatePID
     } //end update PID
     
