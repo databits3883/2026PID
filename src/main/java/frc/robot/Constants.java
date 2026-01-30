@@ -82,14 +82,14 @@ public final class Constants {
     public static final int LAUNCH_MOTOR_ID_A = 11;
     public static final int LAUNCH_MOTOR_ID_B = 12;
     public static double KP = 0.000195;
-    public static double KI = 0.0;
+    public static double KI = 0.00000007;
     public static double KD = 0.0;
     public static double MAX_OUTPUT = 1;
     public static final double MAX_VELOCITY = 1.0;
     public static final double MAX_ACCELERATION = 0.5 ;
     public static final int MAX_CURRENT = 60; //amps
     public static final double MAX_VOLTAGE = 12; //volts
-    public static final double TARGET_VELOCITY_RPS = 2000; 
+    public static final double TARGET_VELOCITY_RPS = -2500; 
     public static final double TOLERANCE = 100; //rps
   }
 }
