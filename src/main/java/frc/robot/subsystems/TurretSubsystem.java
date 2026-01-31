@@ -19,12 +19,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -35,8 +32,6 @@ public class TurretSubsystem extends SubsystemBase {
     private static double kI = Constants.TurretConstants.KI;
     private static double kD = Constants.TurretConstants.KD;
     private static double maxOutput = Constants.TurretConstants.MAX_OUTPUT;
-    //private static final double kMaxVelocity = Constants.TurretConstants.MAX_VELOCITY;
-    //private static final double kMaxAcceleration = Constants.TurretConstants.MAX_ACCELERATION;
     private static final double kTurretGearRatio = Constants.TurretConstants.TURRET_GEAR_RATIO;
     
     private SparkMax m_motor = new SparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
@@ -177,6 +172,10 @@ public class TurretSubsystem extends SubsystemBase {
     public void setCurrentTurretAngle(double angle)
     {
         x_currentAngleRot2Degree = angle;
+    }
+    public void zeroEncoder()
+    {
+        turretEncoder.setPosition(0);
     }
 
     public void periodic() 

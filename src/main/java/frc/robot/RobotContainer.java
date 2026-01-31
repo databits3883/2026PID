@@ -31,8 +31,6 @@ import frc.robot.subsystems.TurretSubsystem;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 
-import org.photonvision.PhotonCamera;
-
 import swervelib.SwerveInputStream;
 
 /**
@@ -48,7 +46,7 @@ public class RobotContainer
   final         CommandJoystick driverJoystick = new CommandJoystick(0);
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/platform"));
+  public static final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/platform"));
   public static TurretSubsystem turretSubsystem  = new TurretSubsystem();
   public static StageSubsystem stageSubsystem  = new StageSubsystem();
   public static LaunchSubsystem launchSubsystem = new LaunchSubsystem();
@@ -203,8 +201,10 @@ public class RobotContainer
       driverJoystick.button(14).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       driverJoystick.button(15).onTrue(Commands.none());
       
-      driverJoystick.button(14).onTrue(new TurretAim(Robot.aprilTagFieldLayout_AllTags.getTagPose(10),drivebase));
+      //Start or stop aiming at target
+      driverJoystick.button(14).onTrue(new TurretAim());
       driverJoystick.button(1).onTrue(new Shoot(launchSubsystem, stageSubsystem));
+      driverJoystick.button(15).onTrue(Commands.runOnce(turretSubsystem::zeroEncoder));
 
       /* Disable actuator
       driverJoystick.povUp().whileTrue(new RunActuator(Constants.ACTUATOR_MOTOR_UP));
