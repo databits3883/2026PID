@@ -50,14 +50,14 @@ public class RobotContainer
 
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem       drivebase  = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve/platform"));
-  public static TurretSubsystem turretSubsystem  = new TurretSubsystem();
-  public static StageSubsystem stageSubsystem  = new StageSubsystem();
-  public static LaunchSubsystem launchSubsystem = new LaunchSubsystem();
+  //public static TurretSubsystem turretSubsystem  = new TurretSubsystem();
+  //public static StageSubsystem stageSubsystem  = new StageSubsystem();
+  //public static LaunchSubsystem launchSubsystem = new LaunchSubsystem();
 
   // Establish a Sendable Chooser that will be able to be sent to the SmartDashboard, allowing selection of desired auto
   private final SendableChooser<Command> autoChooser;
 
-  private PhotonCamera camera = new PhotonCamera("CameraB");
+  //private PhotonCamera camera = new PhotonCamera("CameraB");
 
   /**
    * Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
