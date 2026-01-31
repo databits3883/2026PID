@@ -23,7 +23,7 @@ public class TurretAim  extends Command {
   /** Creates a new runSpinner. */
   public TurretAim (PhotonCamera camera) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(RobotContainer.turretSubsystem);
+    //addRequirements(RobotContainer.turretSubsystem);
     x_camera = camera;
   }
 
@@ -66,7 +66,7 @@ public class TurretAim  extends Command {
       if (target != 0) 
       {
         targetAngle = target;
-        RobotContainer.turretSubsystem.setTurretSetPoint(targetAngle);
+        //RobotContainer.turretSubsystem.setTurretSetPoint(targetAngle);
       }
       else end(false);
   }
@@ -84,13 +84,13 @@ public class TurretAim  extends Command {
       //We do not need to do anything special if this gets interrupted early
     }
     System.out.println("TurretAim:end:about to stop motor");
-    RobotContainer.turretSubsystem.stop();
+    //RobotContainer.turretSubsystem.stop();
   }
   
   // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    int deadband = 4; //degrees
+  /**@Override
+   public boolean isFinished() {
+     int deadband = 4; //degrees
     double currentAngle = RobotContainer.turretSubsystem.getCurrentTurretAngle();
     double currentRots = Units.degreesToRotations(currentAngle);
     double targetRots = Units.degreesToRotations(targetAngle);
@@ -98,10 +98,10 @@ public class TurretAim  extends Command {
     //If we get inside the deadband stop
     if (Math.abs(currentRots - targetRots) <= deadbandRots)
     {
-      RobotContainer.turretSubsystem.stop();
+      //RobotContainer.turretSubsystem.stop();
       return true;
     } 
     else
-      return false;
-  }
+      return false;  
+  } */
 }

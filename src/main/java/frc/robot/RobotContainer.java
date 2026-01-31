@@ -207,7 +207,7 @@ public class RobotContainer
       driverJoystick.button(15).onTrue(Commands.none());
       
       //driverJoystick.button(1).onTrue(new TurretAim(camera));
-      driverJoystick.button(1).onTrue(new Shoot(launchSubsystem, stageSubsystem));
+      //driverJoystick.button(1).onTrue(new Shoot(launchSubsystem, stageSubsystem));
 
       /* Disable actuator
       driverJoystick.povUp().whileTrue(new RunActuator(Constants.ACTUATOR_MOTOR_UP));
