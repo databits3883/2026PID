@@ -57,8 +57,11 @@ public class TurretSubsystem extends SubsystemBase {
                         .i(kI)
                         .d(kD)
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                        .outputRange((-1 * maxOutput),maxOutput); // set PID and 1/3 max speeds                        
+                        .outputRange((-1 * maxOutput),maxOutput)
+                        .maxMotion.maxAcceleration(Constants.TurretConstants.MAX_ACCELERATION)
+                        ; // set PID
         m_baseConfig.idleMode(IdleMode.kBrake);
+        
         m_baseConfig.encoder.positionConversionFactor(kTurretGearRatio);
 
         //Update the motoro config to use PID
@@ -74,6 +77,7 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Turret I Gain", kI);
         SmartDashboard.putNumber("Turret D Gain", kD);
         SmartDashboard.putNumber("Turret IAccum", 0);
+        SmartDashboard.putNumber("Turret MaxAccel", Constants.TurretConstants.MAX_ACCELERATION);
         SmartDashboard.setDefaultBoolean("Turret Stop", false);
         //ShuffleboardTab turretTab = Shuffleboard.getTab("Turret");
     
@@ -223,6 +227,7 @@ public class TurretSubsystem extends SubsystemBase {
             
             //get the optimal target in rotations                
             double targetPositionRotations = getTargetRotationsFromDegrees(targetPositionDegrees);
+            double maxAccel =  SmartDashboard.getNumber("Turret MaxAccel",0);
 
             //Read PID values
             // read PID coefficients from SmartDashboard
@@ -240,12 +245,14 @@ public class TurretSubsystem extends SubsystemBase {
             {
                 //Update the PID on close loopController
                 m_baseConfig.closedLoop
-                        .p(kP)
+                         .p(kP)
                         .i(kI)
                         .d(kD)
                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                        .outputRange((-1 * maxOutput),maxOutput); // set PID and 1/3 max speeds
-                //Update the motoro config to use PID
+                        .outputRange((-1 * maxOutput),maxOutput)
+                        .maxMotion.maxAcceleration(maxAccel)
+                        ; // set PID
+               //Update the motoro config to use PID
                 m_motor.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
             } //end if updatePID
 
