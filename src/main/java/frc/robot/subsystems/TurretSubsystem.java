@@ -13,7 +13,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -28,6 +28,9 @@ public class TurretSubsystem extends SubsystemBase {
     private static final double kTurretGearRatio = Constants.TurretConstants.TURRET_GEAR_RATIO;
     
     private SparkMax m_motor = new SparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
+
+    //Set up the "zero" alignment triffer
+    private DigitalInput turretAlignmentSwitch = new DigitalInput(0);
     
        
     //private SparkMaxConfig m_config = new SparkMaxConfig();
@@ -64,20 +67,13 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.setDefaultNumber("Turret Target Position", 0);
         SmartDashboard.setDefaultNumber("Turret Target Velocity", 0);
         SmartDashboard.setDefaultBoolean("Turret GO", false);
-        SmartDashboard.setDefaultBoolean("Turret Reset Encoder", false);
-        SmartDashboard.setDefaultNumber("Turret Relative Angle", 0);
+        SmartDashboard.setDefaultBoolean("Turret Alignment Trigger", false);
         SmartDashboard.putNumber("Turret P Gain", kP);
         SmartDashboard.putNumber("Turret I Gain", kI);
         SmartDashboard.putNumber("Turret D Gain", kD);
         SmartDashboard.putNumber("Turret IAccum", 0);
         SmartDashboard.putNumber("Turret MaxAccel", Constants.TurretConstants.MAX_ACCELERATION);
         SmartDashboard.setDefaultBoolean("Turret Stop", false);
-        //ShuffleboardTab turretTab = Shuffleboard.getTab("Turret");
-    
-        Shuffleboard.getTab("Turret Sysid Testing").addDouble("Turret Relative Angle", turretEncoder::getPosition);
-        Shuffleboard.getTab("Turret Sysid Testing").addDouble("Turret Angle ProfileGoal", () -> angleSetpoint);
-        Shuffleboard.getTab("Turret Sysid Testing").addDouble("Turret Angle Motor Current", m_motor::getOutputCurrent);        
-        Shuffleboard.getTab("Turret Sysid Testing").addDouble("Turret Angle Motor Output", m_motor::getAppliedOutput);
     }
 
     
@@ -137,27 +133,21 @@ public class TurretSubsystem extends SubsystemBase {
     {
         //Get the current rotations from the motorController
         double currentRotations = turretEncoder.getPosition();
-        SmartDashboard.putNumber("Turret current rotations", currentRotations);
-
         double currentAngleDegrees = getTurretDegrees(currentRotations);
-        SmartDashboard.putNumber("Turret current angle before mod", currentAngleDegrees);
 
         //If negative convert to 0-359
         if (currentAngleDegrees < 0) currentAngleDegrees = 360+currentAngleDegrees;
 
         //Now find delta of current Angle and target angle
         double deltaAngle = targetDegree - currentAngleDegrees;
-        SmartDashboard.putNumber("Turret delta before", deltaAngle);
         //If delta > 180, subtract 360 to get obtimal delta and reverse for negative
         if (deltaAngle < -180) deltaAngle = deltaAngle + 360;
         if (deltaAngle > 180) deltaAngle = deltaAngle - 360;
-        SmartDashboard.putNumber("Turret delta AFTER", deltaAngle);
 
         //Get rotation of deltaAngle in Rotations
         double deltaRotations = getTurretRotations(deltaAngle);
         //Finally add this value to the current rotations for the new target
         double targetRotations = currentRotations + deltaRotations;
-        SmartDashboard.putNumber("Turret targerrotations", targetRotations);
 
         return targetRotations;
     }
@@ -178,25 +168,18 @@ public class TurretSubsystem extends SubsystemBase {
     public void periodic() 
     {    
         double currentMotorRotations = turretEncoder.getPosition();
-
-        // Display encoder position and velocity
-        SmartDashboard.putNumber("Turret Actual Position", currentMotorRotations);
-        SmartDashboard.putNumber("Turret Actual Velocity", turretEncoder.getVelocity());
         double currentAngleRot2Degree = getTurretDegrees(currentMotorRotations);
+        //Update alignment trigger data
+        boolean alignmentTrigger = turretAlignmentSwitch.get();
+        SmartDashboard.putBoolean("Turret Alignment Trigger", alignmentTrigger);
+        //TODO: If pressed reset turrent angle to some known value ~15 degrees
+
         //Update negative values back to positoive
         if (currentAngleRot2Degree < 0) currentAngleRot2Degree = 360+currentAngleRot2Degree;
         setCurrentTurretAngle(currentAngleRot2Degree);
         SmartDashboard.putNumber("Turret Relative Angle rot2deg", currentAngleRot2Degree);
         SmartDashboard.putNumber("Turret IAccum", closedLoopController.getIAccum());
 
-        if (SmartDashboard.getBoolean("Turret Reset Encoder", false)) {
-            SmartDashboard.putBoolean("Turret Reset Encoder", false);
-            // make sure to stop pid loop
-            stop();
-            // Reset the encoder position to abs value
-            turretEncoder.setPosition(0);
-            SmartDashboard.putNumber("Turret Target Position",0);
-        }
         if (SmartDashboard.getBoolean("Turret Stop", false)) 
         {
             SmartDashboard.putBoolean("Turret Stop", false);
@@ -210,7 +193,7 @@ public class TurretSubsystem extends SubsystemBase {
             * Get the target position from SmartDashboard and set it as the setpoint
             * for the closed loop controller.
             */
-            double targetPositionDegrees = SmartDashboard.getNumber("Turret Target Position", 0);
+            double targetPositionDegrees = SmartDashboard.getNumber("Turret Target Position", angleSetpoint);
             targetPositionDegrees = targetPositionDegrees % 360;;
             if (targetPositionDegrees < 0) {
                 //convert from negative rotation to positive rotation degrees
@@ -253,8 +236,10 @@ public class TurretSubsystem extends SubsystemBase {
             closedLoopController.setSetpoint(targetPositionRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
         }
     }
-    public void setTurretSetPoint(double setPointAngle){
-
+    public void setTurretSetPoint(double setPointAngle)
+    {
+        angleSetpoint = setPointAngle;
+        //TODO remove this button   
         SmartDashboard.putNumber("Turret Target Position",setPointAngle);
         SmartDashboard.putBoolean("Turret GO", true);
     }
