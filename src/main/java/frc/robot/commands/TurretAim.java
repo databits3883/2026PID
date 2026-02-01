@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,18 +25,22 @@ public class TurretAim  extends Command {
   private boolean isEnabled = false;
   private boolean inPlayerArea = false;
 
-  //Set up the April Tag ids of places turrent should point
-  private int redHub = 3;
-  private int blueHub = 20;
-  private int redTop = 12;
-  private int redBottom = 7;
-  private int blueTop = 22;
-  private int blueBottom = 17;
+  //Set up the target Poses of places turrent should aim to
+  //TODO: The top/bottom should move to center of the player sections
+  private Pose2d redHubPose = new Pose2d(11.3118646, 4.3902376, new Rotation2d(0)); /* 3 */
+  private Pose2d redBottomPose = new Pose2d(11.9528844, 0.6444996, new Rotation2d(0)); /* 7 */
+  private Pose2d redTopPose = new Pose2d(11.9528844, 7.4247756, new Rotation2d(0)); /* 12 */
+  private Pose2d blueBottomPose = new Pose2d(4.6630844, 0.6444996, new Rotation2d(0)); /* 17 */
+  private Pose2d blueHubPose = new Pose2d( 5.229174199999999, 4.0346376, new Rotation2d(0)); /* 20 */
+  private Pose2d blueTopPose = new Pose2d(4.6630844, 7.4247756, new Rotation2d(0)); /* 22 */
+  
 
   //These are the X, and Y values for the midline and the scoring zones, stub in close values, get on init
-  private double midField = Units.inchesToMeters(158.84);
+  private double midFieldY = Units.inchesToMeters(158.84);
   private double redXPlayer = Units.inchesToMeters(651 -182.11 );
   private double blueXPlayer = Units.inchesToMeters(182.11);
+
+  //Set up the field object to allow us to show the current target on the field
   private final Field2d m_field = new Field2d();
 
   /** Creates a new runSpinner. */
@@ -46,21 +51,9 @@ public class TurretAim  extends Command {
     addRequirements(RobotContainer.turretSubsystem);
 
     //Set up the field positions
-    Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(redHub);
-    if (tagToCheck.isPresent())
-    {
-      midField = tagToCheck.get().getY();
-    } 
-    tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(redTop);
-    if (tagToCheck.isPresent())
-    {
-      redXPlayer = tagToCheck.get().getX();
-    }
-    tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(blueTop);
-    if (tagToCheck.isPresent())
-    {
-      blueXPlayer = tagToCheck.get().getX();
-    }
+    midFieldY = redHubPose.getY();
+    redXPlayer = redTopPose.getX();
+    blueXPlayer = blueTopPose.getX();
 
     //find target to aim based on the robot position
     targetTagPose = findTargetToAim(swerveSubsystem.getPose());
@@ -82,21 +75,18 @@ public class TurretAim  extends Command {
       inPlayerArea = false;
       if (robotX > redXPlayer)
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(redHub);
         inPlayerArea = true;
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = redHubPose;
         System.out.println("picked target redHub");
       }
-      else if (robotY > midField)
+      else if (robotY > midFieldY)
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(redTop);
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = redTopPose;
         System.out.println("picked target redTop");
       }
       else
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(redBottom);
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = redBottomPose;
         System.out.println("picked target redBottom");
       }
     } //end red alliance
@@ -104,21 +94,18 @@ public class TurretAim  extends Command {
     {
       if (robotX < blueXPlayer)
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(blueHub);
         inPlayerArea = true;
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = blueHubPose;
         System.out.println("picked target blueHub");
       }
-      else if (robotY > midField)
+      else if (robotY > midFieldY)
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(blueTop);
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = blueTopPose;
         System.out.println("picked target blueTop");
       }
       else
       {
-        Optional<Pose3d> tagToCheck = Robot.aprilTagFieldLayout_AllTags.getTagPose(blueBottom);
-        if (tagToCheck.isPresent()) targetPose = tagToCheck.get().toPose2d();
+        targetPose = blueBottomPose;
         System.out.println("picked target bluBottom");
       }
     }  //End blue alliance
