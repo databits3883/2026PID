@@ -62,6 +62,7 @@ public final class Constants {
     public static final double MAX_ACCELERATION = 0.5; // Max acceleration in units/sec^2
     public static final double TURRET_GEAR_RATIO = 1.00/15.00;// 15 dev of moter is one rev of turret
 
+    public static final double ALIGNMENT_SWITCH_ANGLE = 15.0;
   }
   public static class StageConstants {
     public static final int STAGE_MOTOR_ID = 18;

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.awt.Container;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -173,11 +175,11 @@ public class TurretSubsystem extends SubsystemBase {
         boolean alignmentTrigger = turretAlignmentSwitch.get();
         SmartDashboard.putBoolean("Turret Alignment Trigger", alignmentTrigger);
         
-        if (alignmentTrigger == true){
-            currentAngleRot2Degree = 15;
+        if (alignmentTrigger)
+        {
+            currentAngleRot2Degree = Constants.TurretConstants.ALIGNMENT_SWITCH_ANGLE;
             currentMotorRotations = getTurretRotations(currentAngleRot2Degree);
-            turretEncoder.setPosition(currentMotorRotations);
-            
+            turretEncoder.setPosition(currentMotorRotations);            
         } 
 
         //Update negative values back to positoive
@@ -201,7 +203,8 @@ public class TurretSubsystem extends SubsystemBase {
             */
             double targetPositionDegrees = SmartDashboard.getNumber("Turret Target Position", angleSetpoint);
             targetPositionDegrees = targetPositionDegrees % 360;;
-            if (targetPositionDegrees < 0) {
+            if (targetPositionDegrees < 0) 
+            {
                 //convert from negative rotation to positive rotation degrees
                 targetPositionDegrees = 360 + targetPositionDegrees;
             }
@@ -245,9 +248,6 @@ public class TurretSubsystem extends SubsystemBase {
     public void setTurretSetPoint(double setPointAngle)
     {
         angleSetpoint = setPointAngle;
-          
-        //SmartDashboard.putNumber("Turret Target Position",setPointAngle);
-        //SmartDashboard.putBoolean("Turret GO", true);
     }
 
 }
