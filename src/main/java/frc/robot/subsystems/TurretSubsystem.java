@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.awt.Container;
-
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -14,11 +12,16 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class TurretSubsystem extends SubsystemBase {
      
@@ -42,7 +45,31 @@ public class TurretSubsystem extends SubsystemBase {
     //Default the turret to start at the angle alignment switch
     private double angleSetpoint = Constants.TurretConstants.ALIGNMENT_SWITCH_ANGLE;
     private double x_currentAngleRot2Degree = 0;
-    private boolean isEnabled = false;
+    
+    private boolean isTurretEnabled = false;
+    private boolean isAutoAiming = false;
+
+    //Auto Aim variables
+    private double targetAngle = 0;
+    private Pose2d targetTagPose = null;
+    private SwerveSubsystem swerveSubsystem = RobotContainer.drivebase;
+    private boolean inPlayerArea = false;
+
+    //Set up the target Poses of places turrent should aim to
+    private Pose2d redHubPose = Constants.TurretConstants.RED_HUB_POSE; 
+    private Pose2d redBottomPose = Constants.TurretConstants.RED_BOTTOM_POSE;
+    private Pose2d redTopPose = Constants.TurretConstants.RED_TOP_POSE;
+    private Pose2d blueBottomPose = Constants.TurretConstants.BLUE_BOTTOM_POSE;
+    private Pose2d blueHubPose = Constants.TurretConstants.BLUE_HUB_POSE;
+    private Pose2d blueTopPose = Constants.TurretConstants.BLUE_TOP_POSE;
+  
+    //These are the X, and Y values for the midline and the scoring zones
+    private double midFieldY = Constants.TurretConstants.MID_FIELD_Y;
+    private double redXPlayer = Constants.TurretConstants.RED_X_PLAYER;
+    private double blueXPlayer = Constants.TurretConstants.BLUE_X_PLAYER;
+
+    //Set up the field object to allow us to show the current target on the field
+    private final Field2d m_field = new Field2d();
 
     public TurretSubsystem() 
     {
@@ -50,7 +77,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         turretEncoder = m_motor.getEncoder();
         turretEncoder.setPosition(angleSetpoint); //update the position on motor encoder
-        isEnabled = false;
+        isTurretEnabled = false;
         
         m_baseConfig.closedLoop
                         .p(kP)
@@ -67,7 +94,17 @@ public class TurretSubsystem extends SubsystemBase {
         //Update the motoro config to use PID
         m_motor.configure(m_baseConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
+        //Aim system
+        //Set up the field positions
+        midFieldY = redHubPose.getY();
+        redXPlayer = redTopPose.getX();
+        blueXPlayer = blueTopPose.getX();
+
+        //find target to aim based on the robot position
+        targetTagPose = findTargetToAim(swerveSubsystem.getPose());
+
         // Initialize dashboard values
+        SmartDashboard.putData("Field",m_field);
         SmartDashboard.setDefaultNumber("Turret Target Position", 0);
         SmartDashboard.setDefaultBoolean("Turret Alignment Trigger", false);
         SmartDashboard.putNumber("Turret P Gain", kP);
@@ -89,7 +126,7 @@ public class TurretSubsystem extends SubsystemBase {
         else if (speed < -1) speed = -1;
         m_motor.setVoltage(1 * speed);
         //Turn on the turret if a speed other than 0 is given
-        if (speed != 0) isEnabled = true;
+        if (speed != 0) isTurretEnabled = true;
     }
 
     /**
@@ -106,7 +143,7 @@ public class TurretSubsystem extends SubsystemBase {
         setAngleMotor(0);
 
         //turn off the control mode
-        isEnabled = false;
+        isTurretEnabled = false;
     }
 
     /**
@@ -217,7 +254,7 @@ public class TurretSubsystem extends SubsystemBase {
             //Turn off motor
             stop();
         }
-        else if (isEnabled)
+        else if (isTurretEnabled)
         {
             //SmartDashboard.putBoolean("Turret GO", false);
             /*
@@ -277,7 +314,115 @@ public class TurretSubsystem extends SubsystemBase {
     public void setTurretSetPoint(double setPointAngle)
     {
         angleSetpoint = setPointAngle;
-        isEnabled = true;
+        isTurretEnabled = true;
     }
+  /*
+   * This will check the alliance and position of the robot
+   * to determine what april tag the turret should point to
+   */
+  private Pose2d findTargetToAim(Pose2d robotPose)
+  {
+    Pose2d targetPose = null;
+    boolean isRedAlliance = Robot.isRedAlliance;
+    double robotX = robotPose.getX();
+    double robotY = robotPose.getY();
 
+    if (isRedAlliance)
+    {
+      inPlayerArea = false;
+      if (robotX > redXPlayer)
+      {
+        inPlayerArea = true;
+        targetPose = redHubPose;
+        System.out.println("picked target redHub");
+      }
+      else if (robotY > midFieldY)
+      {
+        targetPose = redTopPose;
+        System.out.println("picked target redTop");
+      }
+      else
+      {
+        targetPose = redBottomPose;
+        System.out.println("picked target redBottom");
+      }
+    } //end red alliance
+    else
+    {
+      if (robotX < blueXPlayer)
+      {
+        inPlayerArea = true;
+        targetPose = blueHubPose;
+        System.out.println("picked target blueHub");
+      }
+      else if (robotY > midFieldY)
+      {
+        targetPose = blueTopPose;
+        System.out.println("picked target blueTop");
+      }
+      else
+      {
+        targetPose = blueBottomPose;
+        System.out.println("picked target bluBottom");
+      }
+    }  //End blue alliance
+    //If no target is found turn off aim, do we need this??
+    if (targetPose == null) isAutoAiming = false;
+    m_field.getObject("Target").setPose(targetPose);
+    return targetPose;
+  }
+
+  /**
+   * Finds the angle between two points
+   * Will need to update to also find distance between them
+   * @param robotPose
+   * @param targetPose
+   * @return
+   */
+  private double getAngle(Pose2d robotPose, Pose2d targetPose)
+  {
+    //Get current robotRotation
+    double robotHeadingDeg = swerveSubsystem.getHeading().getDegrees();
+    //Need to know what to do with these angles, add heading?  Subtract heading?
+    double targetX = targetPose.getX();
+    double targetY = targetPose.getY();
+    double robotX = robotPose.getX();
+    double robotY = robotPose.getY();
+
+    double theta = Math.atan2(targetY-robotY, targetX-robotX);
+    //We need to invert this angle from clockwise to counterclockwise if we are not in player area
+    if (!inPlayerArea) theta = theta * -1;
+
+    //Get the rotation from the center of the robot to the target if the robot was facing 0 (blue)
+    double relativeRotationDeg = Units.radiansToDegrees(theta);
+    StringBuffer output = new StringBuffer();
+    output.append("[tx:").append(targetX).append(",")
+          .append("ty:").append(targetY).append(",")
+          .append("rx:").append(robotX).append(",")
+          .append("ry:").append(robotY).append(",")
+          .append("\ntargetDeg:").append(relativeRotationDeg).append(",");
+
+    //Take robots position into account
+    relativeRotationDeg -= robotHeadingDeg;
+    output.append("targetDegRobot:").append(relativeRotationDeg).append(",");
+    //Put back to -359 to 359 range
+    relativeRotationDeg = relativeRotationDeg % 360;
+    output.append("finalTargetDeg:").append(relativeRotationDeg).append(",");
+    System.out.println(output.toString());
+
+    //Right now set target to just the angle to tag
+    return relativeRotationDeg;
+  }
+
+  public void enableAutoAim()
+  {
+
+    Pose2d currentRobotPose = swerveSubsystem.getPose();
+    //Find new target based on robot positon
+    targetTagPose = findTargetToAim(swerveSubsystem.getPose());    
+    targetAngle = getAngle(currentRobotPose, targetTagPose);
+    setTurrentAngle(targetAngle);
+    
+  }
+    
 }
