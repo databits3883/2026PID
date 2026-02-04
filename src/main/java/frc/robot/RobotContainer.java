@@ -132,9 +132,6 @@ public class RobotContainer
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
-
-    //drivebase.cam
-
   }
 
   /**

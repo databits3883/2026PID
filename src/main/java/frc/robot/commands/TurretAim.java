@@ -4,20 +4,19 @@
 
 package frc.robot.commands;
 
-import java.util.Optional;
-
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class TurretAim  extends Command {
+public class TurretAim  extends Command 
+{
   private double targetAngle = 0;
   private Pose2d targetTagPose = null;
   private SwerveSubsystem swerveSubsystem = RobotContainer.drivebase;
@@ -25,19 +24,17 @@ public class TurretAim  extends Command {
   private boolean inPlayerArea = false;
 
   //Set up the target Poses of places turrent should aim to
-  //TODO: The top/bottom should move to center of the player sections
-  private Pose2d redHubPose = new Pose2d(11.3118646, 4.3902376, new Rotation2d(0)); /* 3 */
-  private Pose2d redBottomPose = new Pose2d(11.9528844, 0.6444996, new Rotation2d(0)); /* 7 */
-  private Pose2d redTopPose = new Pose2d(11.9528844, 7.4247756, new Rotation2d(0)); /* 12 */
-  private Pose2d blueBottomPose = new Pose2d(4.6630844, 0.6444996, new Rotation2d(0)); /* 17 */
-  private Pose2d blueHubPose = new Pose2d( 5.229174199999999, 4.0346376, new Rotation2d(0)); /* 20 */
-  private Pose2d blueTopPose = new Pose2d(4.6630844, 7.4247756, new Rotation2d(0)); /* 22 */
+  private Pose2d redHubPose = Constants.TurretConstants.RED_HUB_POSE; 
+  private Pose2d redBottomPose = Constants.TurretConstants.RED_BOTTOM_POSE;
+  private Pose2d redTopPose = Constants.TurretConstants.RED_TOP_POSE;
+  private Pose2d blueBottomPose = Constants.TurretConstants.BLUE_BOTTOM_POSE;
+  private Pose2d blueHubPose = Constants.TurretConstants.BLUE_HUB_POSE;
+  private Pose2d blueTopPose = Constants.TurretConstants.BLUE_TOP_POSE;
   
-
-  //These are the X, and Y values for the midline and the scoring zones, stub in close values, get on init
-  private double midFieldY = Units.inchesToMeters(158.84);
-  private double redXPlayer = Units.inchesToMeters(651 -182.11 );
-  private double blueXPlayer = Units.inchesToMeters(182.11);
+  //These are the X, and Y values for the midline and the scoring zones
+  private double midFieldY = Constants.TurretConstants.MID_FIELD_Y;
+  private double redXPlayer = Constants.TurretConstants.RED_X_PLAYER;
+  private double blueXPlayer = Constants.TurretConstants.BLUE_X_PLAYER;
 
   //Set up the field object to allow us to show the current target on the field
   private final Field2d m_field = new Field2d();
@@ -153,13 +150,6 @@ public class TurretAim  extends Command {
   @Override
   public void initialize() {
     SmartDashboard.putData("Field",m_field);
-    if (isEnabled) 
-    {
-      isEnabled = false;
-      //If running turn targetting off
-      end(false);
-    }
-    else isEnabled = true;
 
     Pose2d currentRobotPose = swerveSubsystem.getPose();
     //Find new target based on robot positon
@@ -177,11 +167,14 @@ public class TurretAim  extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    Pose2d currentRobotPose = swerveSubsystem.getPose();
-    //Find new target based on robot positon
-    targetTagPose = findTargetToAim(swerveSubsystem.getPose());    
-    targetAngle = getAngle(currentRobotPose, targetTagPose);
-    setTurrentAngle(targetAngle);
+    if (isEnabled)
+    {
+      Pose2d currentRobotPose = swerveSubsystem.getPose();
+      //Find new target based on robot positon
+      targetTagPose = findTargetToAim(swerveSubsystem.getPose());    
+      targetAngle = getAngle(currentRobotPose, targetTagPose);
+      setTurrentAngle(targetAngle);
+    } //end is enabled
   }
 
   // Called once the command ends or is interrupted.
@@ -195,6 +188,29 @@ public class TurretAim  extends Command {
     }
     System.out.println("TurretAim:end:about to stop motor");
     RobotContainer.turretSubsystem.stop();
+  }
+
+  /**
+   * Force the aim system on
+   */
+  public void enable()
+  {
+    isEnabled = true;
+  }
+
+  /**
+   * toggle the aimming system on and off
+   */
+  public void toggleAim()
+  {
+    if (isEnabled)
+    {
+       isEnabled = false;
+    }
+    else
+    {
+      isEnabled = true;
+    }
   }
   
   // Returns true when the command should end.

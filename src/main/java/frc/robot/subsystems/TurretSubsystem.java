@@ -32,16 +32,17 @@ public class TurretSubsystem extends SubsystemBase {
     private SparkMax m_motor = new SparkMax(Constants.TurretConstants.TURRET_MOTOR_ID, MotorType.kBrushless);
 
     //Set up the "zero" alignment triffer
-    private DigitalInput turretAlignmentSwitch = new DigitalInput(0);
-    
+    private DigitalInput turretAlignmentSwitch = new DigitalInput(0);    
        
     //private SparkMaxConfig m_config = new SparkMaxConfig();
     private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
     private SparkClosedLoopController closedLoopController = m_motor.getClosedLoopController();
     private RelativeEncoder turretEncoder;
     
-    private double angleSetpoint = 0;
+    //Default the turret to start at the angle alignment switch
+    private double angleSetpoint = Constants.TurretConstants.ALIGNMENT_SWITCH_ANGLE;
     private double x_currentAngleRot2Degree = 0;
+    private boolean isEnabled = false;
 
     public TurretSubsystem() 
     {
@@ -49,6 +50,7 @@ public class TurretSubsystem extends SubsystemBase {
 
         turretEncoder = m_motor.getEncoder();
         turretEncoder.setPosition(angleSetpoint); //update the position on motor encoder
+        isEnabled = false;
         
         m_baseConfig.closedLoop
                         .p(kP)
@@ -67,8 +69,6 @@ public class TurretSubsystem extends SubsystemBase {
 
         // Initialize dashboard values
         SmartDashboard.setDefaultNumber("Turret Target Position", 0);
-        SmartDashboard.setDefaultNumber("Turret Target Velocity", 0);
-        SmartDashboard.setDefaultBoolean("Turret GO", false);
         SmartDashboard.setDefaultBoolean("Turret Alignment Trigger", false);
         SmartDashboard.putNumber("Turret P Gain", kP);
         SmartDashboard.putNumber("Turret I Gain", kI);
@@ -79,11 +79,17 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     
+    /**
+     * Used to set the turret to a voltage instead of a position
+     * @param speed
+     */
     public void setAngleMotor(double speed)
     {
         if (speed > 1) speed = 1;
         else if (speed < -1) speed = -1;
         m_motor.setVoltage(1 * speed);
+        //Turn on the turret if a speed other than 0 is given
+        if (speed != 0) isEnabled = true;
     }
 
     /**
@@ -91,15 +97,16 @@ public class TurretSubsystem extends SubsystemBase {
      */
     public void stop()
     {
-        //set the current
+        //set the current setpoint to the current angle
         double currentAngle = getTurretDegrees(turretEncoder.getPosition());
         closedLoopController.setSetpoint(currentAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        //Clear the i buildup
         closedLoopController.setIAccum(0);
         //turn off motor
         setAngleMotor(0);
 
         //turn off the control mode
-        SmartDashboard.putBoolean("Turret GO", false);
+        isEnabled = false;
     }
 
     /**
@@ -154,27 +161,41 @@ public class TurretSubsystem extends SubsystemBase {
         return targetRotations;
     }
     
+    /**
+     * Return the current turret angle
+     * @return
+     */
     public double getCurrentTurretAngle()
     {
         return x_currentAngleRot2Degree;        
     }
+    /**
+     * Set the backend angle, does not change the encoder or setpoint
+     * @param angle
+     */
     public void setCurrentTurretAngle(double angle)
     {
         x_currentAngleRot2Degree = angle;
     }
+    /**
+     * Sets the turret to zero, probably should change this to match the alignment constant
+     */
     public void zeroEncoder()
     {
         turretEncoder.setPosition(0);
     }
 
+    /**
+     * This runs every 10ms or so
+     */
     public void periodic() 
     {    
         double currentMotorRotations = turretEncoder.getPosition();
         double currentAngleRot2Degree = getTurretDegrees(currentMotorRotations);
         //Update alignment trigger data
         boolean alignmentTrigger = turretAlignmentSwitch.get();
-        SmartDashboard.putBoolean("Turret Alignment Trigger", alignmentTrigger);
         
+        //if the alignment switch is triggered force the turret encoder to update its position
         if (alignmentTrigger)
         {
             currentAngleRot2Degree = Constants.TurretConstants.ALIGNMENT_SWITCH_ANGLE;
@@ -185,6 +206,8 @@ public class TurretSubsystem extends SubsystemBase {
         //Update negative values back to positoive
         if (currentAngleRot2Degree < 0) currentAngleRot2Degree = 360+currentAngleRot2Degree;
         setCurrentTurretAngle(currentAngleRot2Degree);
+
+        SmartDashboard.putBoolean("Turret Alignment Trigger", alignmentTrigger);
         SmartDashboard.putNumber("Turret Relative Angle rot2deg", currentAngleRot2Degree);
         SmartDashboard.putNumber("Turret IAccum", closedLoopController.getIAccum());
 
@@ -194,9 +217,9 @@ public class TurretSubsystem extends SubsystemBase {
             //Turn off motor
             stop();
         }
-        else if (SmartDashboard.getBoolean("Turret GO", false)) 
+        else if (isEnabled)
         {
-            SmartDashboard.putBoolean("Turret GO", false);
+            //SmartDashboard.putBoolean("Turret GO", false);
             /*
             * Get the target position from SmartDashboard and set it as the setpoint
             * for the closed loop controller.
@@ -214,6 +237,7 @@ public class TurretSubsystem extends SubsystemBase {
             double targetPositionRotations = getTargetRotationsFromDegrees(targetPositionDegrees);
             double maxAccel =  SmartDashboard.getNumber("Turret MaxAccel",0);
 
+            //FUTURE: Toggle the pid setting to a debug variable, so we do not do this check on every loop
             //Read PID values
             // read PID coefficients from SmartDashboard
             double p = SmartDashboard.getNumber("Turret P Gain", 0);
@@ -243,11 +267,17 @@ public class TurretSubsystem extends SubsystemBase {
 
             //Run the motor
             closedLoopController.setSetpoint(targetPositionRotations, ControlType.kPosition, ClosedLoopSlot.kSlot0);
-        }
+        } // end if enabled
     }
+
+    /**
+     * Sets the turrent's set point
+     * @param setPointAngle
+     */
     public void setTurretSetPoint(double setPointAngle)
     {
         angleSetpoint = setPointAngle;
+        isEnabled = true;
     }
 
 }
