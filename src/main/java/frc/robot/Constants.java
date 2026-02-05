@@ -81,9 +81,15 @@ public final class Constants {
 
   }
   
-  public static class Intake {
-    public static final int DEPLOY_MOTOR_ID = 13;
-    public static final int ROLLER_MOTOR_ID = 14;
+  public static class Intake 
+  {
+    public static final int FOUR_BAR_MOTOR_ID = 13;
+    public static final int INTAKE_MOTOR_ID = 14;
+  }
+
+  public static class Indexer
+  {
+    public static final int MOTOR_ID = 15;
   }
 
   public static class StageConstants {
