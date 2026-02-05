@@ -68,16 +68,16 @@ public final class Constants {
     public static final double ALIGNMENT_SWITCH_ANGLE = 15.0; // The angle that the alignment switch sets the turret at
 
     public static final double MID_FIELD_Y = Units.inchesToMeters(158.84);
-    public static final double RED_X_PLAYER = Units.inchesToMeters(651 - 182.11 );
+    public static final double RED_X_PLAYER = Units.inchesToMeters(651.22 - 182.11 );
     public static final double BLUE_X_PLAYER = Units.inchesToMeters(182.11);
 
     //public static final Pose2d RED_HUB_POSE = new Pose2d(11.3118646, 4.3902376, new Rotation2d(0)); 
-    public static final Pose2d RED_HUB_POSE = new Pose2d(11.8773, MID_FIELD_Y, new Rotation2d(0)); 
-    public static final Pose2d RED_BOTTOM_POSE = new Pose2d(15.2502, 2.0477, new Rotation2d(0)); 
-    public static final Pose2d RED_TOP_POSE = new Pose2d(15.7703, 7.4124, new Rotation2d(0)); 
-    public static final Pose2d BLUE_BOTTOM_POSE = new Pose2d(4.6630844, 0.6444996, new Rotation2d(0)); 
-    public static final Pose2d BLUE_HUB_POSE = new Pose2d( 5.229174199999999, MID_FIELD_Y, new Rotation2d(0)); 
-    public static final Pose2d BLUE_TOP_POSE = new Pose2d(4.6630844, 7.4247756, new Rotation2d(0)); 
+    public static final Pose2d RED_HUB_POSE = new Pose2d(RED_X_PLAYER, MID_FIELD_Y, new Rotation2d(0)); 
+    public static final Pose2d RED_BOTTOM_POSE = new Pose2d(RED_X_PLAYER+(BLUE_X_PLAYER/2), (MID_FIELD_Y * 0.5), new Rotation2d(0)); 
+    public static final Pose2d RED_TOP_POSE = new Pose2d(RED_BOTTOM_POSE.getX(), (MID_FIELD_Y * 1.5), new Rotation2d(0)); 
+    public static final Pose2d BLUE_BOTTOM_POSE = new Pose2d((BLUE_X_PLAYER/2), RED_BOTTOM_POSE.getY(), new Rotation2d(0)); 
+    public static final Pose2d BLUE_HUB_POSE = new Pose2d(BLUE_X_PLAYER, MID_FIELD_Y, new Rotation2d(0)); 
+    public static final Pose2d BLUE_TOP_POSE = new Pose2d((BLUE_X_PLAYER/2), RED_TOP_POSE.getY(), new Rotation2d(0)); 
 
   }
   
