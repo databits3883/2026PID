@@ -80,8 +80,14 @@ public final class Constants {
     public static final Pose2d BLUE_TOP_POSE = new Pose2d(4.6630844, 7.4247756, new Rotation2d(0)); 
 
   }
+  
+  public static class Intake {
+    public static final int DEPLOY_MOTOR_ID = 13;
+    public static final int ROLLER_MOTOR_ID = 14;
+  }
+
   public static class StageConstants {
-    public static final int STAGE_MOTOR_ID = 18;
+    public static final int STAGE_MOTOR_ID = 10;
 
     public static double KP = 0.00015; // Proportional gain
     public static double KI = 0.0000004; // Integral gain
