@@ -45,6 +45,7 @@ public class Deploy extends Command {
         boolean atLimit = intake.isFourBarForwardLimit();
         boolean overTime = (delta > ABORT_TIME);
         boolean finished = false;
+System.out.print("Atlimit: " +atLimit + " delta: " +delta);        
         if (atLimit) finished = true;
         if (overTime) finished = true;
         
