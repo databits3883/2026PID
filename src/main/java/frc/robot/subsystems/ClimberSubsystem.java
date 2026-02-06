@@ -18,21 +18,38 @@ public class ClimberSubsystem extends SubsystemBase
   private SparkLimitSwitch m_climberLimitSwitch_forward = null;
   private SparkLimitSwitch m_climberLimitSwitch_reverse = null;
   private SparkMax m_secondary_motor = new SparkMax(Constants.Climber.SECONDARY_MOTOR_ID, MotorType.kBrushless);
-  private RelativeEncoder climberEncoder;
+  private RelativeEncoder m_climberEncoder;
 
   private double m_climberPower = Constants.Climber.MAX_POWER;
-  //private double m_fourBarPower = Constants.Climber.MAX_POWER;
   private boolean m_isClimberRunning = false;
-  //private boolean m_isFourBarRunning = false; //Might not need
+
+  private double lastPositionRead = 0;
     
+  /**
+   * Initialize the motor and other components
+   */
   public ClimberSubsystem() 
-  { 
-      m_climberLimitSwitch_forward = m_primary_motor.getForwardLimitSwitch();
-      m_climberLimitSwitch_reverse = m_primary_motor.getReverseLimitSwitch();
+  {     
+    //Create the limit switches
+    m_climberLimitSwitch_forward = m_primary_motor.getForwardLimitSwitch();
+    m_climberLimitSwitch_reverse = m_primary_motor.getReverseLimitSwitch();
+    //create the encoder from the motor
+    m_climberEncoder = m_primary_motor.getEncoder();
+    //Track the last time we read the encoder
+    lastPositionRead = m_climberEncoder.getPosition();
   }
-  public boolean isStalled() {
-      // TODO find when the motor is stalled
-      return false;
+
+  //This will determine if the motor is stalled
+  public boolean isStalled() 
+  {
+    //If the motor is supposed to be running, check the current draw
+    double motorAppliedOutput = m_primary_motor.getAppliedOutput();
+    double currentPosition = getCurrentClimberPosition();
+    double deltaPosition = currentPosition - lastPositionRead;
+    System.out.println("IsStalled-MotorAppliedOutput="+motorAppliedOutput+ ", deltaPosition="+deltaPosition);
+    //TODO read the values above and see what values should be a stalled 
+
+    return false;
   }
   /**
    * returns true if the intake 4 bar is at reverse limit
@@ -50,12 +67,6 @@ public class ClimberSubsystem extends SubsystemBase
   {
     return m_climberLimitSwitch_forward.isPressed();
   }
-  /**
-   * Returns true if the motor is spinning
-   * @return
-   */
-
-  
 
   /**
    * Returns true if the intake motor is running
@@ -99,14 +110,20 @@ public class ClimberSubsystem extends SubsystemBase
     runClimber(-1*m_climberPower);
   }
 
-   public double getCurrentClimberPosition()
-    { 
-        return (climberEncoder.getPosition());  
-    }  
+  /**
+   * Returns the current position from the primary encoder
+   * @return
+   */
+  public double getCurrentClimberPosition()
+  { 
+    return (m_climberEncoder.getPosition());  
+  }
+
   @Override
   public void periodic() 
   {
-    //Nothing to do here at the moment
+    //Update the last position reading
+    lastPositionRead = getCurrentClimberPosition();
   }
 
   @Override

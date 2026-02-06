@@ -43,7 +43,7 @@ public final class Constants {
   public static class TurretConstants {
     public static final int TURRET_MOTOR_ID = 9;
 
-    //OLD kp that was working
+    //OLD kp that was working, but might have smoked motor
     //public static double KP = 12; // Proportional gain
     public static double KP = 10; // Proportional gain
     public static double KI = 0.00008; // Integral gain
@@ -59,14 +59,12 @@ public final class Constants {
     public static final double RED_X_PLAYER = Units.inchesToMeters(651.22 - 182.11 );
     public static final double BLUE_X_PLAYER = Units.inchesToMeters(182.11);
 
-    //public static final Pose2d RED_HUB_POSE = new Pose2d(11.3118646, 4.3902376, new Rotation2d(0)); 
     public static final Pose2d RED_HUB_POSE = new Pose2d(RED_X_PLAYER, MID_FIELD_Y, new Rotation2d(0)); 
     public static final Pose2d RED_BOTTOM_POSE = new Pose2d(RED_X_PLAYER+(BLUE_X_PLAYER/2), (MID_FIELD_Y * 0.5), new Rotation2d(0)); 
     public static final Pose2d RED_TOP_POSE = new Pose2d(RED_BOTTOM_POSE.getX(), (MID_FIELD_Y * 1.5), new Rotation2d(0)); 
     public static final Pose2d BLUE_BOTTOM_POSE = new Pose2d((BLUE_X_PLAYER/2), RED_BOTTOM_POSE.getY(), new Rotation2d(0)); 
     public static final Pose2d BLUE_HUB_POSE = new Pose2d(BLUE_X_PLAYER, MID_FIELD_Y, new Rotation2d(0)); 
     public static final Pose2d BLUE_TOP_POSE = new Pose2d((BLUE_X_PLAYER/2), RED_TOP_POSE.getY(), new Rotation2d(0)); 
-
   }
   
   public static class Intake 
@@ -82,13 +80,15 @@ public final class Constants {
   public static class Climber
   {
     public static final int PRIMARY_MOTOR_ID = 16;
-    public static final int SECONDARY_MOTOR_ID = 16; /* This will follow the primary, just adding id for clarrity */
+    /* Secondary will follow the primary, just adding id for clarrity */
+    public static final int SECONDARY_MOTOR_ID = 17; 
     public static double MAX_POWER = 1.0;
   }
 
   public static class Indexer
   {
     public static final int MOTOR_ID = 15;
+    public static double MAX_POWER = 1.0;
   }
 
   public static class StageConstants {
