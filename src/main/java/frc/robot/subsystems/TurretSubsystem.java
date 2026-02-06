@@ -25,7 +25,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class TurretSubsystem extends SubsystemBase {
      
-    private static boolean CALIBRATION_MODE = true;
+    private static boolean CALIBRATION_MODE = false;
 
     // PID Gains and Motion Profile Constraints
     private static double kP = Constants.TurretConstants.KP;
@@ -485,7 +485,7 @@ public class TurretSubsystem extends SubsystemBase {
     //only output debugging every second
     long currentTime = System.currentTimeMillis();
     long delta = currentTime - lastOuput;
-    if (delta > 1000) 
+    if (CALIBRATION_MODE && (delta > 1000))
     {
         System.out.println(output.toString());
         lastOuput = currentTime;
