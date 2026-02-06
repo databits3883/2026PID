@@ -104,6 +104,8 @@ public class Robot extends TimedRobot
       disabledTimer.stop();
       disabledTimer.reset();
     }
+    //Disable auto aim
+    RobotContainer.turretSubsystem.disableAutoAim();
   }
 
   /**
@@ -127,6 +129,8 @@ public class Robot extends TimedRobot
       // m_autonomousCommand.schedule();
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+    //Enable auto aim
+    RobotContainer.turretSubsystem.enableAutoAim();
   }
 
   /**

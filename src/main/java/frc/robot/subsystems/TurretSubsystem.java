@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonUtils;
+
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -44,15 +46,15 @@ public class TurretSubsystem extends SubsystemBase {
     private SparkClosedLoopController closedLoopController = m_motor.getClosedLoopController();
     private RelativeEncoder turretEncoder;
     
-    //Default the turret to start at the angle alignment switch
-    private double angleSetpoint = Constants.TurretConstants.ALIGNMENT_SWITCH_ANGLE;
+    //Default the turret to start at the angle defined in the constants
+    private double angleSetpoint = Constants.TurretConstants.START_TURRET_ANGLE;
     
     private boolean isTurretEnabled = false;
     private boolean isAutoAiming = false;
 
     //Auto Aim variables
     private double targetAngle = 0;
-    private Pose2d targetTagPose = null;
+    private Pose2d targetPose = null;
     private SwerveSubsystem swerveSubsystem = RobotContainer.drivebase;
     private boolean inPlayerArea = false;
 
@@ -71,6 +73,9 @@ public class TurretSubsystem extends SubsystemBase {
 
     private long lastOuput = System.currentTimeMillis();
     private int lastTaget = 0;
+
+    //Track the distance to the current target
+    private double distanceToTarget = 0;
 
     //Set up the field object to allow us to show the current target on the field
     private final Field2d m_field = new Field2d();
@@ -105,7 +110,7 @@ public class TurretSubsystem extends SubsystemBase {
         blueXPlayer = blueHubPose.getX();
 
         //find target to aim based on the robot position
-        targetTagPose = findTargetToAim(swerveSubsystem.getPose());
+        targetPose = findTargetToAim(swerveSubsystem.getPose());
 
         // Initialize dashboard values
         SmartDashboard.putData("Field",m_field);
@@ -140,12 +145,14 @@ public class TurretSubsystem extends SubsystemBase {
     {
         //set the current setpoint to the current angle
         double currentAngle = getTurretDegrees(turretEncoder.getPosition());
-        closedLoopController.setSetpoint(turretEncoder.getPosition(), ControlType.kPosition, ClosedLoopSlot.kSlot0);
+        closedLoopController.setSetpoint(currentAngle, ControlType.kPosition, ClosedLoopSlot.kSlot0);
         //Clear the i buildup
         closedLoopController.setIAccum(0);
         //turn off motor
         setAngleMotor(0);
-
+        //Set target distance to zero
+        distanceToTarget = 0;
+        
         //turn off the control mode
         isTurretEnabled = false;
         //turn off auto aiming
@@ -208,23 +215,14 @@ public class TurretSubsystem extends SubsystemBase {
     }
     
     /**
-     * Return the current turret angle
+     * Return the current turret angle from the encoder
      * @return
      */
-    /*` 
     public double getCurrentTurretAngle()
     {
-        return x_currentAngleRot2Degree;        
+        return getTurretDegrees(turretEncoder.getPosition());        
     }
-    /**
-     * Set the backend angle, does not change the encoder or setpoint
-     * @param angle
-     */
-    /* 
-    public void setCurrentTurretAngle(double angle)
-    {
-        x_currentAngleRot2Degree = angle;
-    }
+    
     /**
      * Sets the turret to zero, probably should change this to match the alignment constant
      */
@@ -240,12 +238,23 @@ public class TurretSubsystem extends SubsystemBase {
     {
         Pose2d currentRobotPose = swerveSubsystem.getPose();
         //Find new target based on robot positon
-        targetTagPose = findTargetToAim(swerveSubsystem.getPose());    
-        targetAngle = getAngle(currentRobotPose, targetTagPose);
+        targetPose = findTargetToAim(swerveSubsystem.getPose());    
+        targetAngle = getAngle(currentRobotPose, targetPose);
+        //Use PhotonVision helper method to get distance
+        distanceToTarget = PhotonUtils.getDistanceToPose(currentRobotPose, targetPose);
         //update the turret setpoint
         setTurretSetPoint(targetAngle);
     }
 
+    /**
+     * Returns the distance to the current tracked target, 0 means no target to autoaim is off
+     * @return
+     */
+    public double getDistanceToTarget()
+    {
+        return distanceToTarget;
+    }
+    
     /**
      * This runs every 10ms or so
      */
@@ -498,6 +507,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void disableAutoAim()
   {
     isAutoAiming = false;
+    distanceToTarget = 0;
     //Should we stop the turret altogether, for now yes
     stop();
   }
