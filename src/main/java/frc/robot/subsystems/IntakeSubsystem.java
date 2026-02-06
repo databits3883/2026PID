@@ -65,7 +65,7 @@ public class IntakeSubsystem extends SubsystemBase
   /** Run the motor to a given power */
   public void runFourBar(double targetVoltage)
   {
-    m_intake_motor.setVoltage(targetVoltage);
+    m_four_bar_motor.setVoltage(targetVoltage);
     if (targetVoltage != 0) m_isFourBarRunning = true; 
     else m_isFourBarRunning = false;
   }

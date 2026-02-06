@@ -43,9 +43,13 @@ public class Deploy extends Command {
         long delta = System.currentTimeMillis() - startTime;
         
         boolean atLimit = intake.isFourBarForwardLimit();
-
+        boolean overTime = (delta > ABORT_TIME);
+        boolean finished = false;
+        if (atLimit) finished = true;
+        if (overTime) finished = true;
+        
         //Stop if at limit or if we ran too long
-        return  (atLimit || (delta > ABORT_TIME));
+        return finished;
     }
 
 }
