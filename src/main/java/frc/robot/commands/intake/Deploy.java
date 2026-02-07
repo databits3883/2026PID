@@ -34,6 +34,9 @@ public class Deploy extends Command {
     {
         //Stop running if told to stop
         intake.stopFourBar();
+
+        //Start the intake
+        intake.runIntake();
     }
 
     @Override

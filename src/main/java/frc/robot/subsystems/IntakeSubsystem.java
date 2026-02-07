@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems;
 
+import org.ejml.dense.row.linsol.qr.AdjLinearSolverQr_FDRM;
+
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -20,6 +22,7 @@ public class IntakeSubsystem extends SubsystemBase
 
   private double m_intakeSpinningPower = Constants.Intake.INTAKE_MOTOR_POWER;
   private double m_fourBarPower = Constants.Intake.FOUR_BAR_POWER;
+  
   private boolean m_isIntakeRunning = false;
   private boolean m_isFourBarRunning = false;
     

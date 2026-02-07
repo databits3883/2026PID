@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.Outtake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.TurretAim;
 import frc.robot.commands.intake.Deploy;
@@ -46,7 +47,6 @@ public class RobotContainer
 {
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  //final         CommandXboxController driverXbox = new CommandXboxController(0);
   final         CommandJoystick driverJoystick = new CommandJoystick(0);
 
   // The robot's subsystems and commands are defined here...
@@ -203,21 +203,25 @@ public class RobotContainer
       //driverJoystick.button(13).onTrue(Commands.runOnce(drivebase::zeroGyro));
       //zero with the correct alliance
       driverJoystick.button(13).onTrue(Commands.runOnce(drivebase::zeroGyroWithAlliance));
-      //driverJoystick.button(13).onTrue(Commands.runOnce(drivebase::zeroGyro));
+      //driverJoystick.button(15).onTrue(Commands.none());
       
-      driverJoystick.button(14).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-      driverJoystick.button(15).onTrue(Commands.none());
+      driverJoystick.button(15).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       
       //Start or stop aiming at target, call the TurretAim to toggle on/off
       driverJoystick.button(14).onTrue(new TurretAim());
+      //Shoot while button is held
       driverJoystick.button(1).whileTrue(new Shoot(launchSubsystem, stageSubsystem));
-      driverJoystick.button(15).onTrue(Commands.runOnce(turretSubsystem::zeroEncoder));
+      
+      //Outake while button is held
+      driverJoystick.button(12).whileTrue(new Outtake(launchSubsystem, stageSubsystem));
+
+      //Intake deploy/retract
       driverJoystick.button(3).onTrue(new Deploy(intakeSubsystem));
       driverJoystick.button(4).onTrue(new Retract(intakeSubsystem));
 
-      //DOES NOT STOP!!!
-      //driverJoystick.button(12).onTrue(drivebase.driveRelative(1,0).andThen(Commands.none()));
-    
+      //Climber
+      //TODO add commands to buttons
+
     }
 
   }

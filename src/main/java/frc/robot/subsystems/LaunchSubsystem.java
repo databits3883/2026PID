@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.InvertType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
@@ -33,15 +32,13 @@ public class LaunchSubsystem extends SubsystemBase
   
   private SparkFlex m_motor_a = new SparkFlex(Constants.LaunchConstants.LAUNCH_MOTOR_ID_A, MotorType.kBrushless);
   private SparkFlex m_motor_b = new SparkFlex(Constants.LaunchConstants.LAUNCH_MOTOR_ID_B, MotorType.kBrushless);
-      
+
   //private SparkMaxConfig m_config = new SparkMaxConfig();
   private SparkFlexConfig m_baseConfig_a = new SparkFlexConfig();
   private SparkFlexConfig m_baseConfig_b = new SparkFlexConfig();
   private SparkClosedLoopController closedLoopController_a = m_motor_a.getClosedLoopController();
   //private SparkClosedLoopController closedLoopController_b = m_motor_b.getClosedLoopController();
   private RelativeEncoder launchEncoder_a=null;
-  //private RelativeEncoder launchEncoder_b=null;
-
 
   public LaunchSubsystem() 
   {   

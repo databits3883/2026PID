@@ -95,12 +95,6 @@ public final class Constants {
     public static int CLIMBER_TIMEOUT_SEC = 4;
   }
 
-  public static class Indexer
-  {
-    public static final int MOTOR_ID = 15;
-    public static double MAX_POWER = 1.0;
-  }
-
   public static class StageConstants {
     public static final int STAGE_MOTOR_ID = 10;
 
@@ -114,6 +108,9 @@ public final class Constants {
     public static final double MAX_VOLTAGE = 12; //volts
     public static final double TARGET_VELOCITY_RPS = 7000; 
     public static final double TOLERANCE = 100; //rps
+
+    public static final int INDEXER_MOTOR_ID = 15;
+    public static double INDEXER_MOTOR_POWER = 1.0;
   }
 
   public static class LaunchConstants {

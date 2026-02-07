@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -52,7 +51,8 @@ public class Vision
   /**
    * April Tag Field Layout of the year.
    */
-  public static final AprilTagFieldLayout fieldLayout                     = Robot.aprilTagFieldLayout_AllTags;
+  public static final AprilTagFieldLayout fieldLayout                     = AprilTagFieldLayout.loadField(
+      AprilTagFields.k2025ReefscapeAndyMark);
   /**
    * Ambiguity defined as a value between (0,1). Used in {@link Vision#filterPose}.
    */
@@ -241,7 +241,6 @@ public class Vision
     return tag.map(pose3d -> PhotonUtils.getDistanceToPose(currentPose.get(), pose3d.toPose2d())).orElse(-1.0);
   }
 
-
   /**
    * Get tracked target from a camera of AprilTagID
    *
@@ -338,21 +337,25 @@ public class Vision
     /**
      * Left Camera
      */
-    /*LEFT_CAM("left",
+    /**
+    LEFT_CAM("left",
              new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(30)),
              new Translation3d(Units.inchesToMeters(12.056),
                                Units.inchesToMeters(10.981),
                                Units.inchesToMeters(8.44)),
-             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)), */
+             VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
+     */
     /**
      * Right Camera
      */
-   /*  RIGHT_CAM("right",
+    /**
+    RIGHT_CAM("right",
               new Rotation3d(0, Math.toRadians(-24.094), Math.toRadians(-30)),
               new Translation3d(Units.inchesToMeters(12.056),
                                 Units.inchesToMeters(-10.981),
                                 Units.inchesToMeters(8.44)),
-              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)), */
+              VecBuilder.fill(4, 4, 8), VecBuilder.fill(0.5, 0.5, 1)),
+     */
     /**
      * Center Camera
      */
@@ -561,29 +564,6 @@ public class Vision
       }
       estimatedRobotPose = visionEst;
     }
-
-  public double getYawOfClosestTarget(Pose3d currentPose, double currentTargetAngle)
-  {
-    double targetAngle = currentTargetAngle;
-    Optional<PhotonPipelineResult> pipelineResult = getLatestResult();
-    if (pipelineResult.isPresent())
-    {
-      PhotonTrackedTarget bestPhotonTarget = pipelineResult.get().getBestTarget();
-        Transform3d bestTarget = bestPhotonTarget.getBestCameraToTarget();
-        Translation2d translation2d = bestTarget.getTranslation().toTranslation2d();
-        Rotation2d rotation2d = new Rotation2d(bestTarget.getRotation().getZ());
-        Pose2d targetPose = new Pose2d(translation2d, rotation2d);
-        Rotation2d targetYaw = PhotonUtils.getYawToPose(currentPose.toPose2d(), targetPose);
-        
-        //Might not neexd to do this
-        targetYaw=targetYaw.minus(currentPose.toPose2d().getRotation()); 
-        
-        targetAngle= Units.rotationsToDegrees(targetYaw.getRotations());
-    }
-    return targetAngle;
-  }
-
-
 
     /**
      * Calculates new standard deviations This algorithm is a heuristic that creates dynamic standard deviations based

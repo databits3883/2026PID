@@ -30,8 +30,12 @@ public class StageSubsystem extends SubsystemBase
   
   private SparkMax m_motor = new SparkMax(Constants.StageConstants.STAGE_MOTOR_ID, MotorType.kBrushless);
     
+  //Setup the indexer, it should run when the stage is run
+  private SparkMax m_indexer_motor = new SparkMax(Constants.StageConstants.INDEXER_MOTOR_ID, MotorType.kBrushless);
+  private double m_indexerSpinningPower = Constants.StageConstants.INDEXER_MOTOR_POWER;
+  private boolean m_isIndexerRunning = false;
+      
   private boolean isRunning = false;      
-  //private SparkMaxConfig m_config = new SparkMaxConfig();
   private SparkMaxConfig m_baseConfig = new SparkMaxConfig();
   private SparkClosedLoopController closedLoopController = m_motor.getClosedLoopController();
   private RelativeEncoder stageEncoder=null;
@@ -78,7 +82,8 @@ public class StageSubsystem extends SubsystemBase
     closedLoopController.setIAccum(0);
     //turn off motor
     m_motor.setVoltage(0);
-    //turn off the control mode
+    //turn off the indexer
+    stopIndexer();
   }
 
   /**
@@ -99,6 +104,48 @@ public class StageSubsystem extends SubsystemBase
       SmartDashboard.putBoolean("Stage Run Motor", isRunning);
     }
     closedLoopController.setSetpoint(targetVelocityRPS, ControlType.kVelocity);
+  }
+
+  /**
+   * Stop the indexer from spinning
+   */
+  public void stopIndexer()
+  {
+    //turn off motor
+    m_indexer_motor.setVoltage(0);
+    m_isIndexerRunning = false;
+  }
+
+  /**
+   * Run the indexer motor to the default configured velocity
+   */
+  public void runIndexer()
+  {
+    //Run to the default target power
+    runIndexer(m_indexerSpinningPower);
+  }
+  /** Run the motor to a given power */
+  public void runIndexer(double targetVoltage)
+  {
+    m_indexer_motor.setVoltage(targetVoltage);
+    if (targetVoltage != 0) m_isIndexerRunning = true; 
+    else m_isIndexerRunning = false;
+  }
+  /**
+   * Run the indexer reverse speed
+   */
+  public void reverseIndexer()
+  {
+    runIndexer(-1*m_indexerSpinningPower);
+  }
+
+  /**
+   * Returns true if the indexer motor is running
+   * @return
+   */
+  public boolean isIndexerRunning()
+  {
+    return m_isIndexerRunning;
   }
 
   /**

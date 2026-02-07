@@ -12,7 +12,7 @@ public class Shoot extends Command {
     {
         this.launcher = launchSubsystem;
         this.stager = stageSubsystem;
-        //this.beamBreak = beamBreak;
+        
         addRequirements(launchSubsystem, stageSubsystem);
     }
 
@@ -25,8 +25,10 @@ public class Shoot extends Command {
     public void execute() {
         launcher.runLauncher();
         if (launcher.atTargetVelocity()) {
+            stager.runIndexer();
             stager.runStage();
         } else {
+            stager.stopIndexer();
             stager.stop();
         }
     }
@@ -34,6 +36,7 @@ public class Shoot extends Command {
     @Override
     public void end(boolean interrupted) {
         launcher.stop();
+        stager.stopIndexer();
         stager.stop();
     }
 
@@ -42,5 +45,4 @@ public class Shoot extends Command {
         //Run until user released button, which will call end
         return false;
     }
-
 }

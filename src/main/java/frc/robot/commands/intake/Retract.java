@@ -21,6 +21,9 @@ public class Retract extends Command {
         intake.reverseFourBar();
         //start a timer, We can stop after X seconds if it does not reach limit
         startTime = System.currentTimeMillis();
+
+        //Stop the intake
+        intake.stopIntake();
     }
 
     @Override
