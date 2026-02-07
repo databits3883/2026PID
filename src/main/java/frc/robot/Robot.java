@@ -29,6 +29,7 @@ public class Robot extends TimedRobot
   private static final AprilTagFields fieldToUse = AprilTagFields.k2026RebuiltWelded;
   public static final AprilTagFieldLayout aprilTagFieldLayout_AllTags = AprilTagFieldLayout.loadField(fieldToUse);
   public static boolean isRedAlliance = false;
+  private boolean hasRunAuto = false;
 
   private RobotContainer m_robotContainer;
 
@@ -128,6 +129,8 @@ public class Robot extends TimedRobot
       // m_autonomousCommand.schedule();
       CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
+    //Mark that we ran in auto
+    hasRunAuto = true;
     //Enable auto aim
     RobotContainer.turretSubsystem.enableAutoAim();
   }
@@ -154,6 +157,14 @@ public class Robot extends TimedRobot
     } else
     {
       CommandScheduler.getInstance().cancelAll();
+    }
+    //If we have not run auto set up initial pose
+    if (!hasRunAuto)
+    {
+      if (isRedAlliance)
+        RobotContainer.drivebase.resetOdometry(Constants.DrivebaseConstants.INITITAL_RED_POSE);
+      else
+        RobotContainer.drivebase.resetOdometry(Constants.DrivebaseConstants.INITITAL_BLUE_POSE);
     }
 
     //Enable auto aim

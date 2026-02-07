@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Meter;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import swervelib.math.Matter;
@@ -38,6 +41,13 @@ public final class Constants {
   {
     // Hold time on motor brakes when disabled
     public static final double WHEEL_LOCK_TIME = 10; // seconds
+    //Set up the initial poses
+    public static final Pose2d INITITAL_RED_POSE = new Pose2d(new Translation2d(Meter.of(16),
+                                                                      Meter.of(4)),
+                                                    Rotation2d.fromDegrees(180));
+    public static final Pose2d INITITAL_BLUE_POSE = new Pose2d(new Translation2d(Meter.of(1),
+                                                                      Meter.of(4)),
+                                                    Rotation2d.fromDegrees(0));
   }
 
   public static class TurretConstants {
