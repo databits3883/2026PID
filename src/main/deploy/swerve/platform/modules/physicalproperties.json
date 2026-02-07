@@ -5,8 +5,8 @@
       "factor": 0
     },
     "drive": {
-      "gearRatio": 6.25,
-      "diameter": 4,
+      "gearRatio": 6.12, 
+      "diameter": 4.09,
       "factor": 0
     }
   },

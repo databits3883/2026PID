@@ -400,10 +400,22 @@ public class SwerveSubsystem extends SubsystemBase
   public Command driveForward()
   {
     return run(() -> {
-      swerveDrive.drive(new Translation2d(1, 0), 0, false, false);
+      swerveDrive.drive(new Translation2d(3, 0), 0, false, false);
     }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
   }
 
+    public Command driveRelative(double metersX, double metersY)
+  {
+    return run(() -> {
+      swerveDrive.drive(new Translation2d(metersX, metersY), 0, false, false);
+    }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
+  }
+  public Command driveRight()
+  {
+    return run(() -> {
+      swerveDrive.drive(new Translation2d(0, -2), 0, false, false);
+    }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
+  }
 
   /**
    * Replaces the swerve module feedforward with a new SimpleMotorFeedforward object.

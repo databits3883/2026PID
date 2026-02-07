@@ -45,8 +45,7 @@ public final class Constants {
     public static final Pose2d INITITAL_RED_POSE = new Pose2d(new Translation2d(Meter.of(16),
                                                                       Meter.of(4)),
                                                     Rotation2d.fromDegrees(180));
-    public static final Pose2d INITITAL_BLUE_POSE = new Pose2d(new Translation2d(Meter.of(1),
-                                                                      Meter.of(4)),
+    public static final Pose2d INITITAL_BLUE_POSE = new Pose2d(Units.inchesToMeters(18.5),Units.inchesToMeters(251.84),
                                                     Rotation2d.fromDegrees(0));
   }
 
