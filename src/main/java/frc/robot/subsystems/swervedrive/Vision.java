@@ -145,9 +145,12 @@ public class Vision
       if (poseEst.isPresent())
       {
         var pose = poseEst.get();
-        swerveDrive.addVisionMeasurement(pose.estimatedPose.toPose2d(),
+        var pose2d = pose.estimatedPose.toPose2d();
+        swerveDrive.addVisionMeasurement(pose2d,
                                          pose.timestampSeconds,
                                          camera.curStdDevs);
+        //Update camera robot pose
+        field2d.getObject(camera.name()+" pose").setPose(pose2d);                                         
       }
     }
 
