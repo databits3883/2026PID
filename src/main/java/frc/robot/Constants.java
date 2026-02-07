@@ -92,6 +92,7 @@ public final class Constants {
     /* Secondary will follow the primary, just adding id for clarrity */
     public static final int SECONDARY_MOTOR_ID = 17; 
     public static double MAX_POWER = 1.0;
+    public static int CLIMBER_TIMEOUT_SEC = 4;
   }
 
   public static class Indexer
