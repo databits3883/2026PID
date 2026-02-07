@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLimitSwitch;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkSoftLimit;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,6 +20,7 @@ public class ClimberSubsystem extends SubsystemBase
   private SparkLimitSwitch m_climberLimitSwitch_reverse = null;
   private SparkMax m_secondary_motor = new SparkMax(Constants.Climber.SECONDARY_MOTOR_ID, MotorType.kBrushless);
   private RelativeEncoder m_climberEncoder;
+  private SparkSoftLimit m_climberClimbingLimit = null;
 
   private double m_climberPower = Constants.Climber.MAX_POWER;
   private boolean m_isClimberRunning = false;
@@ -33,6 +35,7 @@ public class ClimberSubsystem extends SubsystemBase
     //Create the limit switches
     m_climberLimitSwitch_forward = m_primary_motor.getForwardLimitSwitch();
     m_climberLimitSwitch_reverse = m_primary_motor.getReverseLimitSwitch();
+    m_climberClimbingLimit = m_primary_motor.getReverseSoftLimit();
     //create the encoder from the motor
     m_climberEncoder = m_primary_motor.getEncoder();
     //Track the last time we read the encoder
@@ -66,6 +69,13 @@ public class ClimberSubsystem extends SubsystemBase
   public boolean isClimberForwardLimit()
   {
     return m_climberLimitSwitch_forward.isPressed();
+  }
+
+  public boolean isAtClimbLimit()
+  {
+    //TODO: This will probably be defined as a soft limit
+    //verify with build team
+    return m_climberClimbingLimit.isReached();    
   }
 
   /**
@@ -108,6 +118,10 @@ public class ClimberSubsystem extends SubsystemBase
   public void reverseClimber()
   {
     runClimber(-1*m_climberPower);
+  }
+  public void reverseClimber(double reversePowerLevel)
+  {
+    runClimber(reversePowerLevel);
   }
 
   /**

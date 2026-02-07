@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.ClimberSubsystem;
 
-public class PropareToClimb extends Command {
+public class PrepareToClimb extends Command {
     private final ClimberSubsystem climberSub;
     private final long ABORT_TIME = Constants.Climber.CLIMBER_TIMEOUT_SEC * 1000; /* in millis */
     private long startTime = 0;
 
-    public PropareToClimb(ClimberSubsystem climberSubsystem) 
+    public PrepareToClimb(ClimberSubsystem climberSubsystem) 
     {
         this.climberSub = climberSubsystem;
 
@@ -18,7 +18,7 @@ public class PropareToClimb extends Command {
 
     @Override
     public void initialize() {
-        climberSub.reverseClimber();
+        climberSub.reverseClimber(Constants.Climber.SLOW_REVERSE_SPEED);
         //start a timer, We can stop after X seconds if it does not reach limit
         startTime = System.currentTimeMillis();
     }
@@ -41,8 +41,9 @@ public class PropareToClimb extends Command {
     {
         //Calculate the delta time in ms and we can abort after X milliseconds
         long delta = System.currentTimeMillis() - startTime;
-        
-        boolean atLimit = climberSub.isClimberForwardLimit();
+
+        //Check the soft limit
+        boolean atLimit = climberSub.isAtClimbLimit();        
         boolean overTime = (delta > ABORT_TIME);
         boolean finished = false;
         if (atLimit) finished = true;

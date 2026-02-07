@@ -26,6 +26,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.Shoot;
 import frc.robot.commands.TurretAim;
+import frc.robot.commands.ClimberCommands.Climb;
+import frc.robot.commands.ClimberCommands.PrepareToClimb;
 import frc.robot.commands.intake.Deploy;
 import frc.robot.commands.intake.Retract;
 import frc.robot.subsystems.ClimberSubsystem;
@@ -213,14 +215,17 @@ public class RobotContainer
       driverJoystick.button(1).whileTrue(new Shoot(launchSubsystem, stageSubsystem));
       
       //Outake while button is held
-      driverJoystick.button(12).whileTrue(new Outtake(launchSubsystem, stageSubsystem));
+      driverJoystick.button(2).whileTrue(new Outtake(launchSubsystem, stageSubsystem));
 
       //Intake deploy/retract
       driverJoystick.button(3).onTrue(new Deploy(intakeSubsystem));
       driverJoystick.button(4).onTrue(new Retract(intakeSubsystem));
 
       //Climber
-      //TODO add commands to buttons
+      driverJoystick.button(7).onTrue(new PrepareToClimb(climberSubsystem));
+      driverJoystick.button(8).onTrue(new Climb(climberSubsystem));
+      //TODO: Duncan needs to define button for Stow Climber
+      //TODO: Build new button to fully retract climber
 
     }
 

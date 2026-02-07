@@ -91,8 +91,12 @@ public final class Constants {
     public static final int PRIMARY_MOTOR_ID = 16;
     /* Secondary will follow the primary, just adding id for clarrity */
     public static final int SECONDARY_MOTOR_ID = 17; 
+    
     public static double MAX_POWER = 1.0;
+    public static double SLOW_REVERSE_SPEED = -0.3;
+    
     public static int CLIMBER_TIMEOUT_SEC = 4;
+    public static int STOW_TIMEOUT_SEC = 4;
   }
 
   public static class StageConstants {
