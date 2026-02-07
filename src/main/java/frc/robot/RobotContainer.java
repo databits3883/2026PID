@@ -133,10 +133,10 @@ public class RobotContainer
     autoChooser.setDefaultOption("Do Nothing", Commands.none());
 
     //Add a simple auto option to have the robot drive forward for 1 second then stop
-    autoChooser.addOption("Drive Forward", drivebase.driveForward().withTimeout(2));
+    autoChooser.addOption("Drive Forward 3sec", drivebase.driveForward().withTimeout(3));
 
     //Add a simple auto option to have the robot drive forward for 1 second then stop
-    autoChooser.addOption("Drive Right", drivebase.driveRight().withTimeout(2));
+    autoChooser.addOption("Drive Right 3sec", drivebase.driveRight().withTimeout(3));
     
     //Put the autoChooser on the SmartDashboard
     SmartDashboard.putData("Auto Chooser", autoChooser);

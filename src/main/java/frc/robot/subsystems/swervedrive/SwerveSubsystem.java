@@ -393,27 +393,25 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
-   * Returns a Command that tells the robot to drive forward until the command ends.
+   * Returns a Command that tells the robot to drive forward at 1m/s until the command ends.
    *
    * @return a Command that tells the robot to drive forward until the command ends
    */
   public Command driveForward()
   {
     return run(() -> {
-      swerveDrive.drive(new Translation2d(3, 0), 0, false, false);
+      swerveDrive.drive(new Translation2d(1, 0), 0, false, false);
     }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
   }
 
-    public Command driveRelative(double metersX, double metersY)
-  {
-    return run(() -> {
-      swerveDrive.drive(new Translation2d(metersX, metersY), 0, false, false);
-    }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
-  }
+  /**
+   * Drive right 1m./s until it ends
+   * @return
+   */
   public Command driveRight()
   {
     return run(() -> {
-      swerveDrive.drive(new Translation2d(0, -2), 0, false, false);
+      swerveDrive.drive(new Translation2d(0, -1), 0, false, false);
     }).finallyDo(() -> swerveDrive.drive(new Translation2d(0, 0), 0, false, false));
   }
 
