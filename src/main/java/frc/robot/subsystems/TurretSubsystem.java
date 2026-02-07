@@ -94,7 +94,7 @@ public class TurretSubsystem extends SubsystemBase {
                         .outputRange((-1 * maxOutput),maxOutput)
                         .maxMotion.maxAcceleration(Constants.TurretConstants.MAX_ACCELERATION)
                         ; // set PID
-        m_baseConfig.idleMode(IdleMode.kBrake);
+        m_baseConfig.idleMode(IdleMode.kCoast);
         
         m_baseConfig.encoder.positionConversionFactor(kTurretGearRatio);
 
@@ -124,6 +124,7 @@ public class TurretSubsystem extends SubsystemBase {
         SmartDashboard.setDefaultBoolean("Turret Stop", false);
         SmartDashboard.putNumber("Turret Target Position",angleSetpoint);
         SmartDashboard.putNumber("Turret Distance To Target",distanceToTarget);
+        SmartDashboard.putNumber("Turret Motor Current",0);
     }
     
     /**
@@ -291,6 +292,8 @@ public class TurretSubsystem extends SubsystemBase {
           SmartDashboard.putNumber("Turret Encoder rots", turretEncoder.getPosition());
           SmartDashboard.putNumber("Turret SetPoint rots", closedLoopController.getSetpoint());
           SmartDashboard.putNumber("Turret Distance To Target",getDistanceToTarget());
+          SmartDashboard.putNumber("Turret Motor Current",m_motor.getAppliedOutput());
+
         }
 
         if (SmartDashboard.getBoolean("Turret Stop", false)) 
