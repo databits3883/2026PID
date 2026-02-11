@@ -25,7 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Outtake;
 import frc.robot.commands.Shoot;
-import frc.robot.commands.TurretAim;
+import frc.robot.commands.TurretAutoAim;
+import frc.robot.commands.TurretManualAim;
 import frc.robot.commands.ClimberCommands.Climb;
 import frc.robot.commands.ClimberCommands.PrepareToClimb;
 import frc.robot.commands.intake.Deploy;
@@ -209,8 +210,15 @@ public class RobotContainer
       
       driverJoystick.button(15).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
       
-      //Start or stop aiming at target, call the TurretAim to toggle on/off
-      driverJoystick.button(14).onTrue(new TurretAim());
+      //Start or stop aiming at target, call the TurretAim to toggle on/off      
+      driverJoystick.button(14).onTrue(new TurretAutoAim());
+      //manual aim override button
+      driverJoystick.button(12).whileTrue(new TurretManualAim());
+      driverJoystick.povUp().onTrue(Commands.runOnce(() -> { turretSubsystem.setManualAimTarget(0);}));
+      driverJoystick.povDown().onTrue(Commands.runOnce(() -> { turretSubsystem.setManualAimTarget(180);}));
+      driverJoystick.povRight().onTrue(Commands.runOnce(() -> { turretSubsystem.setManualAimTarget(90);}));
+      driverJoystick.povLeft().onTrue(Commands.runOnce(() -> { turretSubsystem.setManualAimTarget(270);}));
+
       //Shoot while button is held
       driverJoystick.button(1).whileTrue(new Shoot(launchSubsystem, stageSubsystem));
       

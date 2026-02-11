@@ -15,7 +15,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -52,12 +51,15 @@ public class TurretSubsystem extends SubsystemBase {
     
     private boolean isTurretEnabled = false;
     private boolean isAutoAiming = false;
+    private boolean isManuallyAiming = false;
+
+    //Manual Aim Targert
+    private double manualAimTargetDegrees = 0;
 
     //Auto Aim variables
     private double targetAngle = 0;
     private Pose2d targetPose = null;
     private SwerveSubsystem swerveSubsystem = RobotContainer.drivebase;
-    private boolean inPlayerArea = false;
 
     //Set up the target Poses of places turrent should aim to
     private Pose2d redHubPose = Constants.TurretConstants.RED_HUB_POSE; 
@@ -314,6 +316,11 @@ public class TurretSubsystem extends SubsystemBase {
             {
                 autoAimToBestTarget();
             }
+            else if (isManuallyAiming)
+            {
+                //Set the set point to the manual defined target
+                setTurretSetPoint(manualAimTargetDegrees);
+            }
             /*
             * Get the target position from SmartDashboard and set it as the setpoint
             * for the closed loop controller.
@@ -399,10 +406,8 @@ public class TurretSubsystem extends SubsystemBase {
 
     if (isRedAlliance)
     {
-      inPlayerArea = false;
       if (turretX > redXPlayer)
       {
-        inPlayerArea = true;
         targetPose = redHubPose;
         if (this.lastTaget != 1)
         {
@@ -433,7 +438,6 @@ public class TurretSubsystem extends SubsystemBase {
     {
       if (turretX < blueXPlayer)
       {
-        inPlayerArea = true;
         targetPose = blueHubPose;
         if (this.lastTaget != 4)
         {
@@ -526,6 +530,7 @@ public class TurretSubsystem extends SubsystemBase {
   public void enableAutoAim()
   {
     isAutoAiming = true;
+    isManuallyAiming = false;
     isTurretEnabled = true;
   }
   public boolean isAutoAiming()
@@ -538,5 +543,41 @@ public class TurretSubsystem extends SubsystemBase {
     else disableAutoAim();
   }
 
-    
+  public void disableManuallyAim()
+  {
+    isManuallyAiming = false;
+    //Enable Auto Aim after disabling Manually Aim
+    enableAutoAim();
+  }
+  public void enableManuallyAim()
+  {
+    isAutoAiming = false;
+    isManuallyAiming = true;
+    isTurretEnabled = true;
+  }
+  public boolean isManuallyAiming()
+  {
+    return isManuallyAiming;
+  }
+  public void toggleManuallyAim()
+  {
+    if (!isManuallyAiming) enableManuallyAim();
+    else disableAutoAim();
+  }
+  /**
+   * Set the target when in manual aim mode
+   * @param targetPositionDegrees
+   */
+  public void setManualAimTarget(double targetPositionDegrees)
+  {
+    //Ensure -360 to 360
+    targetPositionDegrees = targetPositionDegrees % 360;
+    if (targetPositionDegrees < 0) 
+    {
+        //convert from negative rotation to positive rotation degrees
+        targetPositionDegrees = 360 + targetPositionDegrees;
+    }
+
+    manualAimTargetDegrees = targetPositionDegrees;
+  }
 }

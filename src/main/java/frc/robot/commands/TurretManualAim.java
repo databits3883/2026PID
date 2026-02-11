@@ -8,10 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class TurretAim  extends Command 
+public class TurretManualAim  extends Command 
 {
   /** Creates a new turretAim toggle command */
-  public TurretAim () 
+  public TurretManualAim() 
   {
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(RobotContainer.turretSubsystem);
@@ -20,30 +20,30 @@ public class TurretAim  extends Command
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("Togglet Auto Aim Command init()");
-    RobotContainer.turretSubsystem.toggleAutoAim();
+    System.out.println("Toggle Manual Aim Command init()");
+    RobotContainer.turretSubsystem.enableManuallyAim();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() 
   {
-      System.out.println("Togglet Auto Aim Command execute()");
+      System.out.println("Toggle Manual Aim Command execute()");
 }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) 
   {
-    System.out.println("Togglet Auto Aim Command end()");
+    RobotContainer.turretSubsystem.disableManuallyAim();
+    System.out.println("Toggle Manual Aim Command end()");
   }
 
-  
   // Imediate end this command
   @Override
   public boolean isFinished() 
   {
-    System.out.println("Togglet Auto Aim Command isFinished()");
-      return true;
+    //Run until the user releases the button
+    return false;
   } 
 }
